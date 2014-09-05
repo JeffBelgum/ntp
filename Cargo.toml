@@ -1,0 +1,5 @@
+[package]
+
+name = "ntplib"
+version = "0.0.1"
+authors = ["Jeff Belgum <jeffbelgum@gmail.com>"]
