@@ -2,116 +2,175 @@
 # Example
 
 ```rust
-extern crate ntplib;
-
 fn main() {
-    let response: ntplib::Packet = ntplib::request('ntp.efi.com');
-    let efi_time = response.tx_time;
-    println!("{}", efi_time);
+    // let response: ntplib::packet::Packet = ntplib::request('ntp.efi.com');
+    // let efi_time = response.tx_time;
+    // println!("{}", efi_time);
 }
 ```
 */
 
+#![feature(macro_rules)]
+#![feature(tuple_indexing)]
+
+extern crate syntax;
+
 use std::io::net::udp::UdpSocket;
 use std::io::net::ip::{Ipv4Addr, SocketAddr};
+use std::from_str::FromStr;
 
-pub mod packed;
+use packet::Packet;
 
-pub struct Timestamp {
-    seconds: i32,
-    fractions: i32,
+pub mod packet;
+pub mod formats;
+
+
+pub fn request(server_ip: &str) -> Result<packet::Packet, &'static str> {
+
+
+    // _SYSTEM_EPOCH = datetime.date(*time.gmtime(0)[0:3])
+    // """system epoch"""
+    // _NTP_EPOCH = datetime.date(1900, 1, 1)
+    // """NTP epoch"""
+    // NTP_DELTA = (_SYSTEM_EPOCH - _NTP_EPOCH).days * 24 * 3600
+    // """delta between system and NTP time"""
+    //
+    // timestamp + NTP_DELTA // sys to ntp
+
+
+
+
+    let mut socket = match UdpSocket::bind( SocketAddr { ip: Ipv4Addr(0, 0, 0, 0), port: 0 } ) {
+        Ok(s) => s,
+        Err(_) => return Err("couldn't bind sockedt"),
+    };
+
+    let remote_address = SocketAddr { ip: FromStr::from_str(server_ip).unwrap(), port: 123 };
+    let req_data = [19u8,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215, 187, 177, 194, 159, 47, 120, 0];
+
+
+    match socket.send_to(req_data, remote_address) {
+        Err(_) => return Err("couldn't send data"),
+        Ok(_) => (),
+    };
+
+    let mut buf = [0, ..48];
+    match socket.recv_from(buf) {
+        Ok((amt, src)) => { println!("received {} bytes from {}", amt, src); println!("{}", buf.as_slice()); Packet::from_bytes(&buf) }
+        Err(_) => return Err("couldn't receive datagram"),
+    }
+
 }
 
-impl Timestamp {
-    pub fn new(sec: i32, frac: i32) -> Timestamp { Timestamp { seconds: sec, fractions: frac } }
-}
 
-// !network native
-pub struct Packet {
-    pub li: u8,
-    pub vn: u8,
-    pub mode: u8,
-    pub strat: i8,
-    pub poll: i32,
-    pub prec: i32,
-    pub delay: i32,
-    pub disp: i32,
-    pub ref_id: i32,
-    pub ref_time: Timestamp,
-    pub orig_time: Timestamp,
-    pub recv_time: Timestamp,
-    pub transmit_time: Timestamp,
-}
 
-impl Packet {
-    pub fn new(li: u8, vn: u8, mode: u8, strat: i8,
-               poll: i32, prec: i32, delay: i32, disp: i32, ref_id: i32,
-               ref_time: Timestamp, orig_time: Timestamp,
-               recv_time: Timestamp, transmit_time: Timestamp) -> Packet {
-        Packet {
-            li: li,
-            vn: vn,
-            mode: mode,
-            strat: strat,
-            poll: poll,
-            prec: prec,
-            delay: delay,
-            disp: disp,
-            ref_id: ref_id,
-            ref_time: ref_time,
-            orig_time: orig_time,
-            recv_time: recv_time,
-            transmit_time: transmit_time,
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+fn pack_code(code: &str) -> (String, Option<u32>) {
+    if code.len() > 4 {
+        (code.to_string(), None)
+    } else {
+        (code.to_string(), Some(code.chars().fold(0u32, |acc, el| acc << 8 | (el as u32))))
     }
 }
-// use datetime
-// use socket
-// use time
+// macro_rules! pack(
+//     ($($e:expr),*) => ({
+//         $(let (c, p) = pack_code($e);)*
+//         println!("{}\t\t:{}", p.unwrap(), c);
+//         c
+//     });
+//     ($($e:expr),+,) => (pack!($($e),+))
+//     )
 
-enum RefId { }
+pub fn packed_ids() {
+//    pack!("GOES","GPS\n", "IRIG");
+    println!("\n");
+    let (c, p) = pack_code("GOES");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("GPS\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("GAL\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("PPS\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("IRIG");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("WWVB");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("DCF\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("HBG\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("MSF\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("JJY\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("LORC");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("TDF\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("CHU\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("WWV\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("WWVH");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("NIST");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("ACTS");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("USNO");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("PTB\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("PTB\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("LOCL");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("CESM");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("RBDM");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("OMEG");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("DCN\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("TSP\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("DTS\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("ATOM");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("VLF\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("OPPS");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("FREE");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("INIT");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("CDMA");
+    println!("{}\t\t:{}", p.unwrap(), c);
+    let (c, p) = pack_code("\0\0\0\0");
+    println!("{}\t\t:{}", p.unwrap(), c);
+}
 
-enum Stratum { }
 
-enum Mode { }
-
-enum Leap { }
-// 
-// pub struct Packet {
-//     leap: Leap,
-//     version: ,
-//     mode: Mode,
-//     stratum: Stratum,
-//     poll: uint,
-//     precision: uint,
-//     root_delay: uint,
-//     root_dispersion: uint,
-//     ref_id: RefId,
-//     ref_timestamp: uint,
-//     orig_timestamp: uint,
-//     recv_timestamp: uint,
-//     tx_timestamp: uint,
-// }
-// 
-// pub impl Packet {
-//     fn to_data(&self) -> &[u8] { }
-//     fn from_data(buf: &[u8]) -> Option<Self> { }
-// 
-//     /* NTPStates */
-//     fn offset(&self);
-//     fn delay(&self);
-//     fn tx_time(&self);
-//     fn recv_time(&self);
-//     fn orig_time(&self);
-//     fn ref_time(&self);
-//     fn dest_time(&self);
-// }
-// 
-// pub fn request(host, version, port, timeout) { 
-// 
-// 
-// }
-// 
-// #[test]
-// fn it_works() {
-// }
+#[test]
+fn pack_them_ids() {
+    packed_ids();
+}
