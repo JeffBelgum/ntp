@@ -1,55 +1,73 @@
 extern crate time;
 
+use std::fmt;
+
 #[deriving(Show,PartialEq)]
 pub struct ShortFormat {
-    pub seconds: u16,
-    pub fractions: u16,
+    pub sec: u16,
+    pub frac: u16,
 }
 
-#[deriving(Show,PartialEq)]
+impl ShortFormat {
+    #[inline]
+    pub fn default() -> ShortFormat { ShortFormat { sec: 0, frac: 0 } }
+}
+
+#[deriving(PartialEq)]
 pub struct TimestampFormat {
-    pub fractions: u32,
-    pub seconds: u32,
+    pub sec: u32,
+    pub frac: u32,
 }
 
+impl TimestampFormat {
+    #[inline]
+    pub fn default() -> TimestampFormat { TimestampFormat { sec: 0, frac: 0 } }
+}
+
+impl fmt::Show for TimestampFormat {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let t = time::at(FromNtpTime::from_timestamp(*self)).asctime();
+        write!(f, "{}", t)
+    }
+}
 
 pub static EPOCH_DELTA: i64 = 2208988800i64;
 static NTP_SCALE: f64 = 4294967295.0_f64;
 
 pub trait ToNtpTime {
-    fn to_short(&self) -> (u16,u16);
-    fn to_timestamp(&self) -> (u32,u32);
+    fn to_short(&self) -> ShortFormat;
+    fn to_timestamp(&self) -> TimestampFormat;
 }
 
 impl ToNtpTime for time::Timespec {
-    fn to_short(&self) -> (u16,u16)  {
+    fn to_short(&self) -> ShortFormat  {
         let sec = self.sec + EPOCH_DELTA;
         let frac = self.nsec as f64 * NTP_SCALE / 10e9;
-        (sec as u16, frac as u16)
+        ShortFormat { sec: sec as u16, frac: frac as u16 }
     }
-    fn to_timestamp(&self) -> (u32,u32) {
+    fn to_timestamp(&self) -> TimestampFormat {
         let sec = self.sec + EPOCH_DELTA;
         let frac = self.nsec as f64 * NTP_SCALE / 10e9;
-        (sec as u32, frac as u32)
+        TimestampFormat { sec: sec as u32, frac: frac as u32 }
     }
 }
 
 pub trait FromNtpTime {
-    fn from_short(sec: u16, frac: u16) -> Self;
-    fn from_timestamp( sec: u32, frac: u32) -> Self;
+    fn from_short(t: ShortFormat) -> Self;
+    fn from_timestamp(t: TimestampFormat) -> Self;
 }
 
 impl FromNtpTime for time::Timespec {
-    fn from_short(sec: u16, frac: u16) -> time::Timespec {
+    fn from_short(t: ShortFormat) -> time::Timespec {
         time::Timespec::new(
-            sec as i64 - EPOCH_DELTA, 
-            (frac as f64 / NTP_SCALE * 1e9) as i32
+            t.sec as i64 - EPOCH_DELTA, 
+            (t.frac as f64 / NTP_SCALE * 1e9) as i32
             )
     }
-    fn from_timestamp(sec: u32, frac: u32) -> time::Timespec {
+    fn from_timestamp(t: TimestampFormat) -> time::Timespec {
         time::Timespec::new(
-            sec as i64 - EPOCH_DELTA, 
-            (frac as f64 / NTP_SCALE * 1e9) as i32
+            t.sec as i64 - EPOCH_DELTA, 
+            (t.frac as f64 / NTP_SCALE * 1e9) as i32
             )
     }
 
@@ -62,12 +80,12 @@ impl FromNtpTime for time::Timespec {
 #[test]
 fn timestamp_conversions() {
     // TODO: well this isn't a test yet!
-    let sys_time = time::get_time();
-    println!("no conversion:  {}", sys_time);
-    let (sec, frac) = sys_time.to_timestamp();
-    let spec: time::Timespec = FromNtpTime::from_timestamp(sec, frac);
-    println!("from_timestamp: {}", spec);
-    println!("{}", sys_time.to_timestamp());
-    println!("{}", sys_time.to_short());
-    println!("({}, {})", sec, frac);
+    // let sys_time = time::get_time();
+    // println!("no conversion:  {}", sys_time);
+    // let (sec, frac) = sys_time.to_timestamp();
+    // let spec: time::Timespec = FromNtpTime::from_timestamp(sec, frac);
+    // println!("from_timestamp: {}", spec);
+    // println!("{}", sys_time.to_timestamp());
+    // println!("{}", sys_time.to_short());
+    // println!("({}, {})", sec, frac);
 }

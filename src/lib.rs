@@ -14,12 +14,16 @@ fn main() {
 #![feature(tuple_indexing)]
 
 extern crate syntax;
+extern crate time;
 
 use std::io::net::udp::UdpSocket;
 use std::io::net::ip::{Ipv4Addr, SocketAddr};
 use std::from_str::FromStr;
 
 use packet::Packet;
+
+use formats::timestamp::{TimestampFormat, ShortFormat, ToNtpTime};
+use formats::{NoWarning, Ver4, Client, Stratum, NULL};
 
 pub mod packet;
 pub mod formats;
@@ -46,11 +50,26 @@ pub fn request(server_ip: &str) -> Result<packet::Packet, &'static str> {
     };
 
     let remote_address = SocketAddr { ip: FromStr::from_str(server_ip).unwrap(), port: 123 };
-    let req_data = [19u8,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215, 187, 177, 194, 159, 47, 120, 0];
 
 
-    match socket.send_to(req_data, remote_address) {
+    let request = Packet {
+        li: NoWarning, 
+        vn: Ver4,
+        mode: Client,
+        stratum: Stratum::new(0),
+        poll: 0,
+        precision: 0,
+        delay: ShortFormat::default(),
+        dispersion: ShortFormat::default(),
+        ref_id: NULL,
+        ref_time: TimestampFormat::default(), 
+        orig_time: TimestampFormat::default(), 
+        recv_time: TimestampFormat::default(), 
+        transmit_time: time::get_time().to_timestamp(), 
+    };
+
+
+    match socket.send_to(request.to_bytes().as_slice(), remote_address) {
         Err(_) => return Err("couldn't send data"),
         Ok(_) => (),
     };

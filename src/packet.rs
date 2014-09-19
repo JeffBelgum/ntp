@@ -4,7 +4,6 @@ use std::io::{MemReader, MemWriter};
 
 use super::formats::{LeapIndicator, Version, Mode, Stratum, ReferenceIdentifier};
 use super::formats::timestamp::{ShortFormat, TimestampFormat};
-use super::formats::timestamp::{ToNtpTime, FromNtpTime};
 
 macro_rules! unwrap_or_return(
         ($v:expr, $e:expr) => (match $v { Some(v) => v, None => return $e })
@@ -46,30 +45,30 @@ impl Packet {
             poll: reader.read_i8().unwrap(),
             precision: reader.read_i8().unwrap(),
             delay: ShortFormat { 
-                seconds: reader.read_be_u16().unwrap(),
-                fractions: reader.read_be_u16().unwrap(),
+                sec: reader.read_be_u16().unwrap(),
+                frac: reader.read_be_u16().unwrap(),
             },
             dispersion: ShortFormat { 
-                seconds: reader.read_be_u16().unwrap(),
-                fractions: reader.read_be_u16().unwrap(),
+                sec: reader.read_be_u16().unwrap(),
+                frac: reader.read_be_u16().unwrap(),
             },
             ref_id: unwrap_or_return!(FromPrimitive::from_u32(reader.read_be_u32().unwrap()),
                                       Err("Invalid RefId")),
             ref_time: TimestampFormat { 
-                seconds: reader.read_be_u32().unwrap(),
-                fractions: reader.read_be_u32().unwrap(),
+                sec: reader.read_be_u32().unwrap(),
+                frac: reader.read_be_u32().unwrap(),
             },
             orig_time: TimestampFormat { 
-                seconds: reader.read_be_u32().unwrap(),
-                fractions: reader.read_be_u32().unwrap(),
+                sec: reader.read_be_u32().unwrap(),
+                frac: reader.read_be_u32().unwrap(),
             },
             recv_time: TimestampFormat { 
-                seconds: reader.read_be_u32().unwrap(),
-                fractions: reader.read_be_u32().unwrap(),
+                sec: reader.read_be_u32().unwrap(),
+                frac: reader.read_be_u32().unwrap(),
             },
             transmit_time: TimestampFormat { 
-                seconds: reader.read_be_u32().unwrap(),
-                fractions: reader.read_be_u32().unwrap(),
+                sec: reader.read_be_u32().unwrap(),
+                frac: reader.read_be_u32().unwrap(),
             },
 
         })
@@ -82,19 +81,19 @@ impl Packet {
         writer.write_u8(self.stratum.get_value()).unwrap();
         writer.write_i8(self.poll).unwrap();
         writer.write_i8(self.precision).unwrap();
-        writer.write_be_u16(self.delay.seconds).unwrap();
-        writer.write_be_u16(self.delay.fractions).unwrap();
-        writer.write_be_u16(self.dispersion.seconds).unwrap();
-        writer.write_be_u16(self.dispersion.fractions).unwrap();
+        writer.write_be_u16(self.delay.sec).unwrap();
+        writer.write_be_u16(self.delay.frac).unwrap();
+        writer.write_be_u16(self.dispersion.sec).unwrap();
+        writer.write_be_u16(self.dispersion.frac).unwrap();
         writer.write_be_u32(self.ref_id as u32).unwrap();
-        writer.write_be_u32(self.ref_time.seconds).unwrap();
-        writer.write_be_u32(self.ref_time.fractions).unwrap();
-        writer.write_be_u32(self.orig_time.seconds).unwrap();
-        writer.write_be_u32(self.orig_time.fractions).unwrap();
-        writer.write_be_u32(self.recv_time.seconds).unwrap();
-        writer.write_be_u32(self.recv_time.fractions).unwrap();
-        writer.write_be_u32(self.transmit_time.seconds).unwrap();
-        writer.write_be_u32(self.transmit_time.fractions).unwrap();
+        writer.write_be_u32(self.ref_time.sec).unwrap();
+        writer.write_be_u32(self.ref_time.frac).unwrap();
+        writer.write_be_u32(self.orig_time.sec).unwrap();
+        writer.write_be_u32(self.orig_time.frac).unwrap();
+        writer.write_be_u32(self.recv_time.sec).unwrap();
+        writer.write_be_u32(self.recv_time.frac).unwrap();
+        writer.write_be_u32(self.transmit_time.sec).unwrap();
+        writer.write_be_u32(self.transmit_time.frac).unwrap();
 
         writer.unwrap()
     }
@@ -112,12 +111,12 @@ fn packet_from_bytes() {
     215, 187, 177, 194, 159, 47, 120, 0, 215, 188, 128, 113, 45, 236, 230, 45, 215, 188, 128, 113,
     46, 35, 158, 108];
     let expected_output = Packet { li: NoWarning, vn: Ver2, mode: Server, stratum: Stratum::new(1), 
-                          poll: 3, precision: -16, delay: ShortFormat { seconds: 0, fractions: 0 }, 
-                          dispersion:    ShortFormat     { seconds: 0, fractions: 24 }, ref_id: CDMA, 
-                          ref_time:      TimestampFormat { seconds: 3619455081, fractions: 3332976227 }, 
-                          orig_time:     TimestampFormat { seconds: 3619402178, fractions: 2670688256 }, 
-                          recv_time:     TimestampFormat { seconds: 3619455089, fractions: 770500141 }, 
-                          transmit_time: TimestampFormat { seconds: 3619455089, fractions: 774086252 } 
+                          poll: 3, precision: -16, delay: ShortFormat { sec: 0, frac: 0 }, 
+                          dispersion:    ShortFormat     { sec: 0, frac: 24 }, ref_id: CDMA, 
+                          ref_time:      TimestampFormat { sec: 3619455081, frac: 3332976227 }, 
+                          orig_time:     TimestampFormat { sec: 3619402178, frac: 2670688256 }, 
+                          recv_time:     TimestampFormat { sec: 3619455089, frac: 770500141 }, 
+                          transmit_time: TimestampFormat { sec: 3619455089, frac: 774086252 } 
                         };
 
     assert_eq!(expected_output, Packet::from_bytes(&input).unwrap());
@@ -132,12 +131,12 @@ fn packet_to_bytes() {
     215, 187, 177, 194, 159, 47, 120, 0, 215, 188, 128, 113, 45, 236, 230, 45, 215, 188, 128, 113,
     46, 35, 158, 108];
     let input = Packet { li: NoWarning, vn: Ver2, mode: Server, stratum: Stratum::new(1), 
-                          poll: 3, precision: -16, delay: ShortFormat { seconds: 0, fractions: 0 }, 
-                          dispersion:    ShortFormat     { seconds: 0, fractions: 24 }, ref_id: CDMA, 
-                          ref_time:      TimestampFormat { seconds: 3619455081, fractions: 3332976227 }, 
-                          orig_time:     TimestampFormat { seconds: 3619402178, fractions: 2670688256 }, 
-                          recv_time:     TimestampFormat { seconds: 3619455089, fractions: 770500141 }, 
-                          transmit_time: TimestampFormat { seconds: 3619455089, fractions: 774086252 } 
+                          poll: 3, precision: -16, delay: ShortFormat { sec: 0, frac: 0 }, 
+                          dispersion:    ShortFormat     { sec: 0, frac: 24 }, ref_id: CDMA, 
+                          ref_time:      TimestampFormat { sec: 3619455081, frac: 3332976227 }, 
+                          orig_time:     TimestampFormat { sec: 3619402178, frac: 2670688256 }, 
+                          recv_time:     TimestampFormat { sec: 3619455089, frac: 770500141 }, 
+                          transmit_time: TimestampFormat { sec: 3619455089, frac: 774086252 } 
                         };
     assert_eq!(input.to_bytes(), expected_output);
 
