@@ -1,7 +1,8 @@
 [package]
-authors = ["Jeff Belgum <jeffbelgum@gmail.com>"]
 name = "ntplib"
 version = "0.0.1"
+authors = ["Jeff Belgum <jeffbelgum@gmail.com>"]
+license = "MIT/Apache-2.0"
 
 [dependencies]
 byteorder = "0.5.3"
