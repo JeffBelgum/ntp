@@ -1,12 +1,18 @@
 extern crate ntplib;
-
-//use ntplib::packet::Packet;
+extern crate time;
 
 fn main() {
     // ntplib::packed_ids();
 
-    let packet = ntplib::request("10.3.24.172");
-    println!("{}", packet);
+    // REF_ID is an ip if stratum >= 2
+    // let packet = ntplib::request(env::args().next().as_slice());
+    // match packet {
+    //     Ok(p) => {
+    //         println!("{}", p);
+    //         println!("{}", time::at(p.tx_time()).asctime());
+    //     },
+    //     Err(s) => println!("{}", s),
+    // };
 
     
     // Example
