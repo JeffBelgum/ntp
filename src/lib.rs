@@ -21,9 +21,10 @@ fn main() {
 extern crate byteorder;
 extern crate time;
 
-use std::net::{ToSocketAddrs,UdpSocket};
-use std::io::Cursor;
 use std::convert::TryFrom;
+use std::io::Cursor;
+use std::net::{ToSocketAddrs,UdpSocket};
+use std::time::Duration;
 
 
 
@@ -33,9 +34,9 @@ pub mod packet;
 
 pub fn request<A: ToSocketAddrs>(addr: A) -> errors::Result<packet::Packet> {
     let data: Vec<u8> = packet::Packet::new_client().into();
-    // FIXME TODO don't hardcode a port!
-    let sock = UdpSocket::bind("0.0.0.0:5679")?;
-    // FIXME TODO set some sensible socket r/w timeouts
+    let sock = UdpSocket::bind("0.0.0.0:0")?;
+    sock.set_read_timeout(Some(Duration::from_secs(5)))?;
+    sock.set_write_timeout(Some(Duration::from_secs(5)))?;
     let sz = sock.send_to(&data, addr)?;
     println!("{:?}", sock.local_addr());
     println!("sent: {}", sz);
@@ -50,6 +51,6 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> errors::Result<packet::Packet> {
 #[test]
 fn test_request() {
     let res = request("0.pool.ntp.org:123");
-    let p = res.expect("Failed to get a ntp packet from ntp.org");
+    let _ = res.expect("Failed to get a ntp packet from ntp.org");
 }
 
