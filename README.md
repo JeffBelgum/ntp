@@ -11,7 +11,7 @@ Add this to your `Cargo.toml`:
 
 ```ini
 [dependencies]
-ntplib = { git = "https://github.com/JeffBelgum/ntplib" }
+ntp = "0.1.0"
 ```
 
 and this to your crate root:
@@ -19,6 +19,16 @@ and this to your crate root:
 ```rust
 extern crate ntplib;
 ```
+
+Todo
+----
+
+- [ ] no-std
+- [ ] io independent parsing
+- [ ] async support
+- [ ] setting clocks
+- [ ] ntp server functionality
+
 
 Contributions
 -------------

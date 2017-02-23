@@ -3,6 +3,13 @@ name = "ntp"
 version = "0.1.0"
 authors = ["Jeff Belgum <jeffbelgum@gmail.com>"]
 license = "MIT/Apache-2.0"
+description = "Library for parsing and communicating over Network Time Protocol."
+documentation = "https://docs.rs/ntp/"
+homepage = "https://github.com/JeffBelgum/ntp"
+repository = "https://github.com/JeffBelgum/ntp"
+readme = "README.md"
+keywords = ["protocol", "network", "time", "parser", "binary"]
+categories = ["date-and-time", "network-programming", "parser-implementations", "encoding"]
 
 [dependencies]
 byteorder = "0.5.3"
