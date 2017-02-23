@@ -32,6 +32,7 @@ pub mod packet;
 
 pub fn request<A: ToSocketAddrs>(addr: A) -> errors::Result<packet::Packet> {
     let data: Vec<u8> = packet::Packet::new_client().into();
+    // FIXME TODO don't hardcode a port!
     let sock = UdpSocket::bind("0.0.0.0:5679")?;
     let sz = sock.send_to(&data, addr)?;
     println!("{:?}", sock.local_addr());
