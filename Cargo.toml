@@ -1,6 +1,6 @@
 [package]
 name = "ntp"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Jeff Belgum <jeffbelgum@gmail.com>"]
 license = "MIT/Apache-2.0"
 
