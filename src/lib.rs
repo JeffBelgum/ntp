@@ -12,6 +12,7 @@ fn main() {
 */
 
 #![recursion_limit = "1024"] 
+// TODO remove dependence on nightly
 #![feature(try_from)] 
 
 #[macro_use] extern crate custom_derive;
@@ -34,6 +35,7 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> errors::Result<packet::Packet> {
     let data: Vec<u8> = packet::Packet::new_client().into();
     // FIXME TODO don't hardcode a port!
     let sock = UdpSocket::bind("0.0.0.0:5679")?;
+    // FIXME TODO set some sensible socket r/w timeouts
     let sz = sock.send_to(&data, addr)?;
     println!("{:?}", sock.local_addr());
     println!("sent: {}", sz);
