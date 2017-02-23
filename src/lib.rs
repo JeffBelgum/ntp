@@ -4,7 +4,7 @@
 ```rust
 fn main() {
     let address = "0.pool.ntp.org:123";
-    let response: ntplib::packet::Packet = ntplib::request(address).unwrap();
+    let response: ntp::packet::Packet = ntp::request(address).unwrap();
     let ntp_time = response.transmit_time;
     println!("{}", ntp_time);
 }
@@ -13,7 +13,6 @@ fn main() {
 
 #![recursion_limit = "1024"] 
 #![feature(try_from)] 
-#![feature(question_mark)] 
 
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate conv;

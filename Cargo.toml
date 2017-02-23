@@ -1,12 +1,12 @@
 [package]
-name = "ntplib"
+name = "ntp"
 version = "0.0.1"
 authors = ["Jeff Belgum <jeffbelgum@gmail.com>"]
 license = "MIT/Apache-2.0"
 
 [dependencies]
 byteorder = "0.5.3"
-conv = { path = "/Users/belgum/src/rust/rust-conv" }
+conv = "0.3.2"
 custom_derive = "0.1.5"
 error-chain = "0.5.0"
 time = "0.1.35"

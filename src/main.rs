@@ -1,4 +1,4 @@
-extern crate ntplib;
+extern crate ntp;
 extern crate time;
 
 fn main() {
