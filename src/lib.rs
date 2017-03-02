@@ -18,6 +18,7 @@ fn main() {
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate conv;
 #[macro_use] extern crate error_chain;
+#[macro_use] extern crate log;
 extern crate byteorder;
 extern crate time;
 
@@ -38,12 +39,12 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> errors::Result<packet::Packet> {
     sock.set_read_timeout(Some(Duration::from_secs(5)))?;
     sock.set_write_timeout(Some(Duration::from_secs(5)))?;
     let sz = sock.send_to(&data, addr)?;
-    println!("{:?}", sock.local_addr());
-    println!("sent: {}", sz);
+    debug!("{:?}", sock.local_addr());
+    debug!("sent: {}", sz);
     let mut buf = vec![0; 48];
     let res = sock.recv(&mut buf)?;
-    println!("recv: {:?}", res);
-    println!("{:?}", &buf[..]);
+    debug!("recv: {:?}", res);
+    debug!("{:?}", &buf[..]);
     let rdr = Cursor::new(&buf);
     return Ok(packet::Packet::try_from(rdr)?);
 }

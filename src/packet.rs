@@ -36,7 +36,7 @@ pub struct Packet {
 
 impl Packet {
     pub fn new_client() -> Packet {
-        println!("{}", TimestampFormat::from(time::now().to_timespec()));
+        trace!("{}", TimestampFormat::from(time::now().to_timespec()));
         Packet {
             mode: Mode::Client,
             vn: Version::Ver2,
