@@ -82,7 +82,7 @@ impl<T: ReadBytesExt> convert::TryFrom<T> for Packet {
         let precision = rdr.read_i8()?;
         let delay = rdr.read_u32::<NetworkEndian>()?.into();
         let dispersion = rdr.read_u32::<NetworkEndian>()?.into();
-        let ref_id_raw = rdr.read_u32::<NetworkEndian>().unwrap();
+        let ref_id_raw = rdr.read_u32::<NetworkEndian>()?.into();
         let ref_id = if stratum.primary() {
             let source = PrimarySource::try_from(ref_id_raw)?;
             ReferenceIdentifier::Primary(source)
