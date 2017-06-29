@@ -1,8 +1,6 @@
 extern crate time;
 
 
-use std::convert;
-
 use byteorder::{NetworkEndian, ReadBytesExt, WriteBytesExt};
 use conv::TryFrom;
 use errors::*;
@@ -44,33 +42,8 @@ impl Packet {
             ..Default::default()
         }
     }
-}
 
-impl From<Packet> for Vec<u8> {
-    fn from(p: Packet) -> Vec<u8> {
-        let mut buf = Vec::with_capacity(48);
-        let mut li_vn_mode = 0;
-        li_vn_mode |= (p.li as u8) << 6;
-        li_vn_mode |= (p.vn as u8) << 3;
-        li_vn_mode |= p.mode as u8;
-        buf.push(li_vn_mode);
-        buf.push(p.stratum.get_value());
-        buf.push(p.poll as u8);
-        buf.push(p.precision as u8);
-        buf.write_u32::<NetworkEndian>(p.delay.into()).expect("can't fail");
-        buf.write_u32::<NetworkEndian>(p.dispersion.into()).expect("can't fail");
-        buf.write_u32::<NetworkEndian>(p.ref_id.into()).expect("can't fail");
-        buf.write_u64::<NetworkEndian>(p.ref_time.into()).expect("can't fail");
-        buf.write_u64::<NetworkEndian>(p.orig_time.into()).expect("can't fail");
-        buf.write_u64::<NetworkEndian>(p.recv_time.into()).expect("can't fail");
-        buf.write_u64::<NetworkEndian>(p.transmit_time.into()).expect("can't fail");
-        buf
-    }
-}
-
-impl<T: ReadBytesExt> convert::TryFrom<T> for Packet {
-    type Err = Error;
-    fn try_from(mut rdr: T) -> Result<Packet> {
+    pub fn try_from<T: ReadBytesExt>(mut rdr: T) -> Result<Packet> {
         let li_vn_mode = rdr.read_u8()?;
         let li = LeapIndicator::try_from(li_vn_mode >> 6)?;
         let vn = Version::try_from((li_vn_mode >> 3) & 0b111)?;
@@ -96,8 +69,6 @@ impl<T: ReadBytesExt> convert::TryFrom<T> for Packet {
         let recv_time = rdr.read_u64::<NetworkEndian>()?.into();
         let transmit_time = rdr.read_u64::<NetworkEndian>()?.into();
 
-
-
         Ok(Packet {
             li: li,
             vn: vn,
@@ -113,6 +84,28 @@ impl<T: ReadBytesExt> convert::TryFrom<T> for Packet {
             recv_time: recv_time,
             transmit_time: transmit_time,
         })
+    }
+}
+
+impl From<Packet> for Vec<u8> {
+    fn from(p: Packet) -> Vec<u8> {
+        let mut buf = Vec::with_capacity(48);
+        let mut li_vn_mode = 0;
+        li_vn_mode |= (p.li as u8) << 6;
+        li_vn_mode |= (p.vn as u8) << 3;
+        li_vn_mode |= p.mode as u8;
+        buf.push(li_vn_mode);
+        buf.push(p.stratum.get_value());
+        buf.push(p.poll as u8);
+        buf.push(p.precision as u8);
+        buf.write_u32::<NetworkEndian>(p.delay.into()).expect("can't fail");
+        buf.write_u32::<NetworkEndian>(p.dispersion.into()).expect("can't fail");
+        buf.write_u32::<NetworkEndian>(p.ref_id.into()).expect("can't fail");
+        buf.write_u64::<NetworkEndian>(p.ref_time.into()).expect("can't fail");
+        buf.write_u64::<NetworkEndian>(p.orig_time.into()).expect("can't fail");
+        buf.write_u64::<NetworkEndian>(p.recv_time.into()).expect("can't fail");
+        buf.write_u64::<NetworkEndian>(p.transmit_time.into()).expect("can't fail");
+        buf
     }
 }
 

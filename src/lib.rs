@@ -12,8 +12,6 @@ fn main() {
 */
 
 #![recursion_limit = "1024"] 
-// TODO remove dependence on nightly
-#![feature(try_from)] 
 
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate conv;
@@ -22,7 +20,6 @@ fn main() {
 extern crate byteorder;
 extern crate time;
 
-use std::convert::TryFrom;
 use std::io::Cursor;
 use std::net::{ToSocketAddrs,UdpSocket};
 use std::time::Duration;
