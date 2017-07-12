@@ -2,15 +2,13 @@ use std::fmt;
 
 pub mod timestamp;
 
-custom_derive! {
-    #[repr(u8)]
-    #[derive(Debug,PartialEq,TryFrom(u8))]
-    pub enum LeapIndicator {
-        NoWarning = 0,
-        AddOne = 1,
-        SubOne = 2,
-        Unknown = 3
-    }
+#[repr(u8)]
+#[derive(Debug,PartialEq,TryFromPrimitive)]
+pub enum LeapIndicator {
+    NoWarning = 0,
+    AddOne = 1,
+    SubOne = 2,
+    Unknown = 3,
 }
 
 impl Default for LeapIndicator {
@@ -19,15 +17,13 @@ impl Default for LeapIndicator {
     }
 }
 
-custom_derive! {
-    #[repr(u8)]
-    #[derive(Debug,PartialEq,Eq,PartialOrd,Ord,TryFrom(u8))]
-    pub enum Version {
-        Ver1 = 1,
-        Ver2 = 2,
-        Ver3 = 3,
-        Ver4 = 4,
-    }
+#[repr(u8)]
+#[derive(Debug,PartialEq,Eq,PartialOrd,Ord,TryFromPrimitive)]
+pub enum Version {
+    Ver1 = 1,
+    Ver2 = 2,
+    Ver3 = 3,
+    Ver4 = 4,
 }
 
 impl Default for Version {
@@ -37,19 +33,17 @@ impl Default for Version {
 }
 
 
-custom_derive! {
-    #[repr(u8)]
-    #[derive(Debug,PartialEq,TryFrom(u8))]
-    pub enum Mode {
-        Reserved = 0,
-        SymmetricActive = 1,
-        SymmetricPassive = 2,
-        Client = 3,
-        Server = 4,
-        Broadcase = 5,
-        NTPControlMessage = 6,
-        ReservedForPrivateUse = 7,
-    }
+#[repr(u8)]
+#[derive(Debug,PartialEq,TryFromPrimitive)]
+pub enum Mode {
+    Reserved = 0,
+    SymmetricActive = 1,
+    SymmetricPassive = 2,
+    Client = 3,
+    Server = 4,
+    Broadcase = 5,
+    NTPControlMessage = 6,
+    ReservedForPrivateUse = 7,
 }
 
 impl Default for Mode {
@@ -118,44 +112,42 @@ impl fmt::Display for ReferenceIdentifier {
 }
 
 /// ascii chars packed into a u32 for matching a raw buffer
-custom_derive! {
-    #[repr(u32)]
-    #[derive(Debug,PartialEq,Copy,Clone,TryFrom(u32))]
-    pub enum PrimarySource {
-        GOES = 1196377427,
-        GPS  = 1196446464,
-        CDMA = 1128549697,
-        GAL  = 1195461632,
-        PPS  = 1347441408,
-        IRIG = 1230129479,
-        WWVB = 1465341506,
-        DCF  = 1145259520,
-        HBG  = 1212303104,
-        MSF  = 1297303040,
-        JJY  = 1246386432,
-        LORC = 1280266819,
-        TDF  = 1413760512,
-        CHU  = 1128813824,
-        WWV  = 1465341440,
-        WWVH = 1465341512,
-        NIST = 1313428308,
-        ACTS = 1094931539,
-        USNO = 1431522895,
-        PTB  = 1347699200,
-        LOCL = 1280262988,
-        CESM = 1128616781,
-        RBDM = 1380074573,
-        OMEG = 1330464071,
-        DCN  = 1145261568,
-        TSP  = 1414746112,
-        DTS  = 1146376960,
-        ATOM = 1096044365,
-        VLF  = 1447839232,
-        OPPS = 1330663507,
-        FREE = 1179796805,
-        INIT = 1229867348,
-        NULL = 0000000000,
-    }
+#[repr(u32)]
+#[derive(Debug,PartialEq,Copy,Clone,TryFromPrimitive)]
+pub enum PrimarySource {
+    GOES = 1196377427,
+    GPS  = 1196446464,
+    CDMA = 1128549697,
+    GAL  = 1195461632,
+    PPS  = 1347441408,
+    IRIG = 1230129479,
+    WWVB = 1465341506,
+    DCF  = 1145259520,
+    HBG  = 1212303104,
+    MSF  = 1297303040,
+    JJY  = 1246386432,
+    LORC = 1280266819,
+    TDF  = 1413760512,
+    CHU  = 1128813824,
+    WWV  = 1465341440,
+    WWVH = 1465341512,
+    NIST = 1313428308,
+    ACTS = 1094931539,
+    USNO = 1431522895,
+    PTB  = 1347699200,
+    LOCL = 1280262988,
+    CESM = 1128616781,
+    RBDM = 1380074573,
+    OMEG = 1330464071,
+    DCN  = 1145261568,
+    TSP  = 1414746112,
+    DTS  = 1146376960,
+    ATOM = 1096044365,
+    VLF  = 1447839232,
+    OPPS = 1330663507,
+    FREE = 1179796805,
+    INIT = 1229867348,
+    NULL = 0000000000,
 }
 
 impl Default for PrimarySource {

@@ -13,8 +13,7 @@ fn main() {
 
 #![recursion_limit = "1024"] 
 
-#[macro_use] extern crate custom_derive;
-#[macro_use] extern crate conv;
+#[macro_use] extern crate derive_try_from_primitive;
 #[macro_use] extern crate error_chain;
 #[macro_use] extern crate log;
 extern crate byteorder;
@@ -48,7 +47,6 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> errors::Result<packet::Packet> {
 
 #[test]
 fn test_request() {
-    let res = request("0.pool.ntp.org:123");
+    let res = request("0.pol.ntp.org:123");
     let _ = res.expect("Failed to get a ntp packet from ntp.org");
 }
-

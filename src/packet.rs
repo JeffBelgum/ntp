@@ -2,7 +2,6 @@ extern crate time;
 
 
 use byteorder::{NetworkEndian, ReadBytesExt, WriteBytesExt};
-use conv::TryFrom;
 use errors::*;
 use formats::{
     LeapIndicator,
@@ -45,9 +44,12 @@ impl Packet {
 
     pub fn try_from<T: ReadBytesExt>(mut rdr: T) -> Result<Packet> {
         let li_vn_mode = rdr.read_u8()?;
-        let li = LeapIndicator::try_from(li_vn_mode >> 6)?;
-        let vn = Version::try_from((li_vn_mode >> 3) & 0b111)?;
-        let mode = Mode::try_from(li_vn_mode & 0b111)?;
+        let li = LeapIndicator::try_from(li_vn_mode >> 6)
+            .ok_or(format!("Invalid LeapIndicator value: {}", li_vn_mode >> 6))?;
+        let vn = Version::try_from((li_vn_mode >> 3) & 0b111)
+            .ok_or(format!("Invalid Version value: {}", (li_vn_mode >> 3) & 0b111))?;
+        let mode = Mode::try_from(li_vn_mode & 0b111)
+            .ok_or(format!("Invalid Mode value: {}", li_vn_mode & 0b111))?;
 
         let stratum = Stratum::new(rdr.read_u8()?);
 
@@ -57,7 +59,8 @@ impl Packet {
         let dispersion = rdr.read_u32::<NetworkEndian>()?.into();
         let ref_id_raw = rdr.read_u32::<NetworkEndian>()?.into();
         let ref_id = if stratum.primary() {
-            let source = PrimarySource::try_from(ref_id_raw)?;
+            let source = PrimarySource::try_from(ref_id_raw)
+                .ok_or(format!("Invalid PrimarySource value: {}", ref_id_raw))?;
             ReferenceIdentifier::Primary(source)
         } else if stratum.secondary() {
             ReferenceIdentifier::Secondary(ref_id_raw)
@@ -113,7 +116,6 @@ impl From<Packet> for Vec<u8> {
 mod tests {
     use std::io::Cursor;
     use super::Packet;
-    use std::convert::TryFrom;
     use formats::{
         LeapIndicator,
         Version,
