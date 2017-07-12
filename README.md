@@ -11,7 +11,7 @@ Add this to your `Cargo.toml`:
 
 ```ini
 [dependencies]
-ntp = "0.2.0"
+ntp = "0.3.0"
 ```
 
 and this to your crate root:
@@ -40,4 +40,4 @@ License
 
 `ntplib` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 
-See LICENSE-APACHE, and LICENSE-MIT for details.
+See LICENSE-APACHE and LICENSE-MIT for details.

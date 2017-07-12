@@ -1,6 +1,6 @@
 [package]
 name = "ntp"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Jeff Belgum <jeffbelgum@gmail.com>"]
 license = "MIT/Apache-2.0"
 description = "Library for parsing and communicating over Network Time Protocol."
@@ -11,10 +11,18 @@ readme = "README.md"
 keywords = ["protocol", "network", "time", "parser", "binary"]
 categories = ["date-and-time", "network-programming", "parser-implementations", "encoding"]
 
+
+[features]
+backtrace = ["error-chain/backtrace"]
+
+
 [dependencies]
 byteorder = "0.5.3"
 conv = "0.3.2"
 custom_derive = "0.1.5"
-error-chain = "0.5.0"
 log = "0.3.6"
 time = "0.1.35"
+
+[dependencies.error-chain]
+version = "0.10.0"
+default-features = false
