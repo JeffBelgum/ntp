@@ -17,7 +17,7 @@ ntp = "0.3.0"
 and this to your crate root:
 
 ```rust
-extern crate ntplib;
+extern crate ntp;
 ```
 
 Todo
@@ -38,6 +38,6 @@ Pull Requests and Issues welcome!
 License
 -------
 
-`ntplib` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
+`ntp` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 
 See LICENSE-APACHE and LICENSE-MIT for details.
