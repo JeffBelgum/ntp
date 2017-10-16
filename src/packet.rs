@@ -113,7 +113,6 @@ impl From<Packet> for Vec<u8> {
 mod tests {
     use std::io::Cursor;
     use super::Packet;
-    use std::convert::TryFrom;
     use formats::{
         LeapIndicator,
         Version,
