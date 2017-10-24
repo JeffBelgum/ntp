@@ -47,8 +47,13 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> errors::Result<packet::Packet> {
 }
 
 #[test]
-fn test_request() {
+fn test_request_ntp_org() {
     let res = request("0.pool.ntp.org:123");
     let _ = res.expect("Failed to get a ntp packet from ntp.org");
 }
 
+#[test]
+fn test_request_google() {
+    let res = request("time.google.com:123");
+    let _ = res.expect("Failed to get a ntp packet from time.google.com");
+}
