@@ -11,7 +11,7 @@ Add this to your `Cargo.toml`:
 
 ```ini
 [dependencies]
-ntp = "0.3.0"
+ntp = "0.4"
 ```
 
 and this to your crate root:
