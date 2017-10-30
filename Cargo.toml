@@ -14,6 +14,7 @@ categories = ["date-and-time", "network-programming", "parser-implementations", 
 
 [features]
 backtrace = ["error-chain/backtrace"]
+generators = ["futures-await"]
 
 
 [dependencies]
@@ -21,7 +22,15 @@ byteorder = "1.1"
 conv = "0.3.2"
 custom_derive = "0.1.5"
 log = "0.3.6"
+futures = "0.1"
 time = "0.1.35"
+
+tokio-core = "0.1"
+tokio-io = "0.1"
+
+[dependencies.futures-await]
+git = "https://github.com/alexcrichton/futures-await"
+optional = true
 
 [dependencies.error-chain]
 version = "0.11.0"

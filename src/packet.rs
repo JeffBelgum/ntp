@@ -1,8 +1,12 @@
+#![allow(unused_imports)]
 extern crate time;
 
 
+use std::net::SocketAddr;
+
 use byteorder::{NetworkEndian, ReadBytesExt, WriteBytesExt};
 use conv::TryFrom;
+
 use errors::*;
 use formats::{
     LeapIndicator,
@@ -85,6 +89,25 @@ impl Packet {
             transmit_time: transmit_time,
         })
     }
+
+    pub fn to_writer<W: WriteBytesExt>(&self, mut writer: W) -> Result<()> {
+        let mut li_vn_mode = 0;
+        li_vn_mode |= (self.li as u8) << 6;
+        li_vn_mode |= (self.vn as u8) << 3;
+        li_vn_mode |= self.mode as u8;
+        writer.write_u8(li_vn_mode);
+        writer.write_u8(self.stratum.get_value());
+        writer.write_u8(self.poll as u8);
+        writer.write_u8(self.precision as u8);
+        writer.write_u32::<NetworkEndian>(self.delay.into())?;
+        writer.write_u32::<NetworkEndian>(self.dispersion.into())?;
+        writer.write_u32::<NetworkEndian>(self.ref_id.into())?;
+        writer.write_u64::<NetworkEndian>(self.ref_time.into())?;
+        writer.write_u64::<NetworkEndian>(self.orig_time.into())?;
+        writer.write_u64::<NetworkEndian>(self.recv_time.into())?;
+        writer.write_u64::<NetworkEndian>(self.transmit_time.into())?;
+        Ok(())
+    }
 }
 
 impl From<Packet> for Vec<u8> {
@@ -111,8 +134,9 @@ impl From<Packet> for Vec<u8> {
 
 #[cfg(test)]
 mod tests {
-    use std::io::Cursor;
-    use super::Packet;
+    use std::io::{self, Cursor};
+    use super::*;
+    use futures::prelude::*;
     use formats::{
         LeapIndicator,
         Version,
@@ -184,5 +208,19 @@ mod tests {
         let rdr = Cursor::new(&input);
         let output: Vec<u8> = Packet::try_from(rdr).unwrap().into();
         assert_eq!(input.as_slice(), output.as_slice());
+    }
+
+    #[test]
+    fn packet_from_async() {
+        // let addr = "127.0.0.1:12345".parse().unwrap();
+        // let mut l = Core::new().unwrap();
+        // let handle = l.handle();
+        // let socket = tokio_net::UdpSocket::bind(&addr, &handle).unwrap();
+        // let bytes: Vec<u8> = Packet::new_client().into();
+        // fn send_bytes(socket: tokio_net::UdpSocket) -> io::Result<u64> {
+        //     Ok(0)
+        // }
+        // socket.send_to(
+        // try_from_async();
     }
 }

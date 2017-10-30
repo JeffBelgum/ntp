@@ -4,7 +4,7 @@ pub mod timestamp;
 
 custom_derive! {
     #[repr(u8)]
-    #[derive(Debug,PartialEq,TryFrom(u8))]
+    #[derive(Clone,Copy,Debug,PartialEq,TryFrom(u8))]
     pub enum LeapIndicator {
         NoWarning = 0,
         AddOne = 1,
@@ -21,7 +21,7 @@ impl Default for LeapIndicator {
 
 custom_derive! {
     #[repr(u8)]
-    #[derive(Debug,PartialEq,Eq,PartialOrd,Ord,TryFrom(u8))]
+    #[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,TryFrom(u8))]
     pub enum Version {
         Ver1 = 1,
         Ver2 = 2,
@@ -39,7 +39,7 @@ impl Default for Version {
 
 custom_derive! {
     #[repr(u8)]
-    #[derive(Debug,PartialEq,TryFrom(u8))]
+    #[derive(Clone,Copy,Debug,PartialEq,TryFrom(u8))]
     pub enum Mode {
         Reserved = 0,
         SymmetricActive = 1,
@@ -59,7 +59,7 @@ impl Default for Mode {
 }
 
 
-#[derive(Debug,PartialEq,Eq,PartialOrd,Default,Ord)]
+#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Default,Ord)]
 pub struct Stratum {
     value: u8,
 }
@@ -110,7 +110,7 @@ impl fmt::Display for ReferenceIdentifier {
         match *self {
             ReferenceIdentifier::Primary(id) => write!(f, "{}", id),
             ReferenceIdentifier::Secondary(id) => {
-                let fields: Vec<u8> = vec![(id >> 24 & 0xff) as u8, (id >> 16 & 0xff) as u8, (id >> 8 & 0xff) as u8, (id & 0xff) as u8];
+                let fields = [(id >> 24 & 0xff) as u8, (id >> 16 & 0xff) as u8, (id >> 8 & 0xff) as u8, (id & 0xff) as u8];
                 write!(f, "{}.{}.{}.{}", fields[0], fields[1], fields[2], fields[3])
             },
         }
