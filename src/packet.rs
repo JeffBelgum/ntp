@@ -1,10 +1,9 @@
-extern crate time;
-
 use byteorder::{NetworkEndian, ReadBytesExt, WriteBytesExt};
 use conv::TryFrom;
 use errors::*;
 use formats::timestamp::{ShortFormat, TimestampFormat};
 use formats::{LeapIndicator, Mode, PrimarySource, ReferenceIdentifier, Stratum, Version};
+use unix_time;
 
 #[derive(Debug, PartialEq, Default)]
 pub struct Packet {
@@ -25,11 +24,12 @@ pub struct Packet {
 
 impl Packet {
     pub fn new_client() -> Packet {
-        trace!("{}", TimestampFormat::from(time::now().to_timespec()));
+        let transmit_time = unix_time::Instant::now().into();
+        trace!("{:?}", transmit_time);
         Packet {
             mode: Mode::Client,
             vn: Version::Ver2,
-            transmit_time: time::now().to_timespec().into(),
+            transmit_time,
             ..Default::default()
         }
     }

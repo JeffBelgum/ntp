@@ -1,6 +1,4 @@
-extern crate time;
-
-use std::fmt;
+use unix_time;
 
 pub static EPOCH_DELTA: i64 = 2208988800i64;
 static NTP_SCALE: f64 = 4294967295.0_f64;
@@ -11,31 +9,19 @@ pub struct ShortFormat {
     pub frac: u16,
 }
 
-impl fmt::Display for ShortFormat {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let t = time::at(time::Timespec::from(*self));
-        write!(f, "{}", t.asctime())
+impl From<ShortFormat> for unix_time::Instant {
+    fn from(t: ShortFormat) -> unix_time::Instant {
+        let secs = t.sec as i64 - EPOCH_DELTA;
+        let subsec_nanos = (t.frac as f64 / NTP_SCALE * 1e9) as i32;
+        unix_time::Instant::new(secs, subsec_nanos)
     }
 }
 
-// Conversions
-impl From<ShortFormat> for time::Timespec {
-    fn from(t: ShortFormat) -> time::Timespec {
-        time::Timespec::new(
-            t.sec as i64 - EPOCH_DELTA,
-            (t.frac as f64 / NTP_SCALE * 1e9) as i32,
-        )
-    }
-}
-
-impl From<time::Timespec> for ShortFormat {
-    fn from(t: time::Timespec) -> ShortFormat {
-        let sec = t.sec + EPOCH_DELTA;
-        let frac = t.nsec as f64 * NTP_SCALE / 1e10;
-        ShortFormat {
-            sec: sec as u16,
-            frac: frac as u16,
-        }
+impl From<unix_time::Instant> for ShortFormat {
+    fn from(t: unix_time::Instant) -> ShortFormat {
+        let sec = t.secs() + EPOCH_DELTA;
+        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
+        ShortFormat { sec: sec as u16, frac: frac as u16 }
     }
 }
 
@@ -60,30 +46,19 @@ pub struct TimestampFormat {
     pub frac: u32,
 }
 
-impl fmt::Display for TimestampFormat {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let t = time::at(time::Timespec::from(*self));
-        write!(f, "{}", t.asctime())
+impl From<unix_time::Instant> for TimestampFormat {
+    fn from(t: unix_time::Instant) -> TimestampFormat {
+        let sec = t.secs() + EPOCH_DELTA;
+        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
+        TimestampFormat { sec: sec as u32, frac: frac as u32 }
     }
 }
 
-impl From<TimestampFormat> for time::Timespec {
-    fn from(t: TimestampFormat) -> time::Timespec {
-        time::Timespec::new(
-            t.sec as i64 - EPOCH_DELTA,
-            (t.frac as f64 / NTP_SCALE * 1e9) as i32,
-        )
-    }
-}
-
-impl From<time::Timespec> for TimestampFormat {
-    fn from(t: time::Timespec) -> TimestampFormat {
-        let sec = t.sec + EPOCH_DELTA;
-        let frac = t.nsec as f64 * NTP_SCALE / 1e10;
-        TimestampFormat {
-            sec: sec as u32,
-            frac: frac as u32,
-        }
+impl From<TimestampFormat> for unix_time::Instant {
+    fn from(t: TimestampFormat) -> unix_time::Instant {
+        let secs = t.sec as i64 - EPOCH_DELTA;
+        let subsec_nanos = (t.frac as f64 / NTP_SCALE * 1e9) as i32;
+        unix_time::Instant::new(secs, subsec_nanos)
     }
 }
 

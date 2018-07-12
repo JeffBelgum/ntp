@@ -2,11 +2,17 @@
 # Example
 
 ```rust
+extern crate chrono;
+extern crate ntp;
+
+use chrono::TimeZone;
+
 fn main() {
     let address = "0.pool.ntp.org:123";
     let response: ntp::packet::Packet = ntp::request(address).unwrap();
-    let ntp_time = response.transmit_time;
-    println!("{}", ntp_time);
+    let unix_time = ntp::unix_time::Instant::from(response.transmit_time);
+    let local_time = chrono::Local.timestamp(unix_time.secs(), unix_time.subsec_nanos() as _);
+    println!("{}", local_time);
 }
 ```
 */
@@ -22,7 +28,6 @@ extern crate error_chain;
 #[macro_use]
 extern crate log;
 extern crate byteorder;
-extern crate time;
 
 use std::io::Cursor;
 use std::net::{ToSocketAddrs, UdpSocket};
@@ -31,6 +36,7 @@ use std::time::Duration;
 pub mod errors;
 pub mod formats;
 pub mod packet;
+pub mod unix_time;
 
 pub fn request<A: ToSocketAddrs>(addr: A) -> errors::Result<packet::Packet> {
     let data: Vec<u8> = packet::Packet::new_client().into();
