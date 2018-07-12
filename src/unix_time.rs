@@ -67,13 +67,13 @@ impl Instant {
                 let secs = duration.as_secs() as i64;
                 let subsec_nanos = duration.subsec_nanos() as i32;
                 Instant::new(secs, subsec_nanos)
-            },
+            }
             Err(sys_time_err) => {
                 let duration_pre_unix_epoch = sys_time_err.duration();
                 let secs = -(duration_pre_unix_epoch.as_secs() as i64);
                 let subsec_nanos = -(duration_pre_unix_epoch.subsec_nanos() as i32);
                 Instant::new(secs, subsec_nanos)
-            },
+            }
         }
     }
 

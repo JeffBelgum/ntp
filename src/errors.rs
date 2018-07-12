@@ -1,7 +1,7 @@
-use std::io;
 use conv::Unrepresentable;
+use std::io;
 
-error_chain! { 
+error_chain! {
     foreign_links {
         IOError(io::Error);
         UnrepresentableU8(Unrepresentable<u8>);

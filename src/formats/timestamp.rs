@@ -3,7 +3,7 @@ use unix_time;
 pub static EPOCH_DELTA: i64 = 2208988800i64;
 static NTP_SCALE: f64 = 4294967295.0_f64;
 
-#[derive(Debug,PartialEq,Default,Copy,Clone)]
+#[derive(Debug, PartialEq, Default, Copy, Clone)]
 pub struct ShortFormat {
     pub sec: u16,
     pub frac: u16,
@@ -21,7 +21,10 @@ impl From<unix_time::Instant> for ShortFormat {
     fn from(t: unix_time::Instant) -> ShortFormat {
         let sec = t.secs() + EPOCH_DELTA;
         let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
-        ShortFormat { sec: sec as u16, frac: frac as u16 }
+        ShortFormat {
+            sec: sec as u16,
+            frac: frac as u16,
+        }
     }
 }
 
@@ -40,8 +43,7 @@ impl From<u32> for ShortFormat {
     }
 }
 
-
-#[derive(Debug,PartialEq,Default,Copy,Clone)]
+#[derive(Debug, PartialEq, Default, Copy, Clone)]
 pub struct TimestampFormat {
     pub sec: u32,
     pub frac: u32,
@@ -51,7 +53,10 @@ impl From<unix_time::Instant> for TimestampFormat {
     fn from(t: unix_time::Instant) -> TimestampFormat {
         let sec = t.secs() + EPOCH_DELTA;
         let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
-        TimestampFormat { sec: sec as u32, frac: frac as u32 }
+        TimestampFormat {
+            sec: sec as u32,
+            frac: frac as u32,
+        }
     }
 }
 
@@ -77,12 +82,6 @@ impl From<u64> for TimestampFormat {
         }
     }
 }
-
-
-
-
-
-
 
 #[test]
 fn timestamp_conversions() {
