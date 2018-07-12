@@ -36,7 +36,6 @@ impl Default for Version {
     }
 }
 
-
 custom_derive! {
     #[repr(u8)]
     #[derive(Debug,PartialEq,TryFrom(u8))]
@@ -58,33 +57,48 @@ impl Default for Mode {
     }
 }
 
-
-#[derive(Debug,PartialEq,Eq,PartialOrd,Default,Ord)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Default, Ord)]
 pub struct Stratum {
     value: u8,
 }
 
 impl Stratum {
     #[inline]
-    pub fn new(val: u8) -> Stratum { Stratum { value: val } }
+    pub fn new(val: u8) -> Stratum {
+        Stratum { value: val }
+    }
     #[inline]
-    pub fn unspecified(&self) -> bool { self.value == 0 }
+    pub fn unspecified(&self) -> bool {
+        self.value == 0
+    }
     #[inline]
-    pub fn invalid(&self) -> bool { self.value == 0 }
+    pub fn invalid(&self) -> bool {
+        self.value == 0
+    }
     #[inline]
-    pub fn primary(&self) -> bool { self.value == 1 }
+    pub fn primary(&self) -> bool {
+        self.value == 1
+    }
     #[inline]
-    pub fn secondary(&self) -> bool { 2 <= self.value && self.value <= 15 }
+    pub fn secondary(&self) -> bool {
+        2 <= self.value && self.value <= 15
+    }
     #[inline]
-    pub fn unsynchronized(&self) -> bool { self.value == 16 }
+    pub fn unsynchronized(&self) -> bool {
+        self.value == 16
+    }
     #[inline]
-    pub fn reserved(&self) -> bool { self.value >= 17 }
+    pub fn reserved(&self) -> bool {
+        self.value >= 17
+    }
     #[inline]
-    pub fn get_value(&self) -> u8 { self.value }
+    pub fn get_value(&self) -> u8 {
+        self.value
+    }
 }
 
 #[repr(u32)]
-#[derive(Debug,PartialEq,Copy,Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum ReferenceIdentifier {
     Primary(PrimarySource),
     Secondary(u32),
@@ -110,9 +124,14 @@ impl fmt::Display for ReferenceIdentifier {
         match *self {
             ReferenceIdentifier::Primary(id) => write!(f, "{}", id),
             ReferenceIdentifier::Secondary(id) => {
-                let fields: Vec<u8> = vec![(id >> 24 & 0xff) as u8, (id >> 16 & 0xff) as u8, (id >> 8 & 0xff) as u8, (id & 0xff) as u8];
+                let fields: Vec<u8> = vec![
+                    (id >> 24 & 0xff) as u8,
+                    (id >> 16 & 0xff) as u8,
+                    (id >> 8 & 0xff) as u8,
+                    (id & 0xff) as u8,
+                ];
                 write!(f, "{}.{}.{}.{}", fields[0], fields[1], fields[2], fields[3])
-            },
+            }
         }
     }
 }
@@ -170,35 +189,35 @@ impl fmt::Display for PrimarySource {
         use self::PrimarySource::*;
         let desc = match *self {
             GOES => "GOES: Geosynchronous Orbit Environment Satellite",
-            GPS  => "GPS: Global Position System",
+            GPS => "GPS: Global Position System",
             CDMA => "CDMA: Code Division Multiple Access",
-            GAL  => "GAL: Galileo Positioning System",
-            PPS  => "PPS: Generic pulse-per-second",
+            GAL => "GAL: Galileo Positioning System",
+            PPS => "PPS: Generic pulse-per-second",
             IRIG => "IRIG: Inter-Range Instrumentation Group",
             WWVB => "WWVB: LF Radio WWVB Ft. Collins, CO 60 kHz",
-            DCF  => "DCF: LF Radio DCF77 Mainflingen, DE 77.5 kHz",
-            HBG  => "HBG: LF Radio HBG Prangins, HB 75 kHz",
-            MSF  => "MSF: LF Radio MSF Anthorn, UK 60 kHz",
-            JJY  => "JJY: LF Radio JJY Fukushima, JP 40 kHz, Saga, JP 60 kHz",
+            DCF => "DCF: LF Radio DCF77 Mainflingen, DE 77.5 kHz",
+            HBG => "HBG: LF Radio HBG Prangins, HB 75 kHz",
+            MSF => "MSF: LF Radio MSF Anthorn, UK 60 kHz",
+            JJY => "JJY: LF Radio JJY Fukushima, JP 40 kHz, Saga, JP 60 kHz",
             LORC => "LORC: MF Radio LORAN C station, 100 kHz",
-            TDF  => "TDF: MF Radio Allouis, FR 162 kHz",
-            CHU  => "CHU: HF Radio CHU Ottawa, Ontario",
-            WWV  => "WWV: HF Radio WWV Ft. Collins, CO",
+            TDF => "TDF: MF Radio Allouis, FR 162 kHz",
+            CHU => "CHU: HF Radio CHU Ottawa, Ontario",
+            WWV => "WWV: HF Radio WWV Ft. Collins, CO",
             WWVH => "WWVH: HF Radio WWVH Kauai, HI",
             NIST => "NIST: NIST telephone modem",
             ACTS => "ACTS: ACTS telephone modem",
             USNO => "USNO: USNO telephone modem",
-            PTB  => "PTB: European telephone modem",
+            PTB => "PTB: European telephone modem",
             GOOG => "GOOG: Google Public NTP",
             LOCL => "LOCL: Not Yet Described",
             CESM => "CESM: Not Yet Described",
             RBDM => "RBDM: Not Yet Described",
             OMEG => "OMEG: Not Yet Described",
-            DCN  => "DCN: Not Yet Described",
-            TSP  => "TSP: Not Yet Described",
-            DTS  => "DTS: Not Yet Described",
+            DCN => "DCN: Not Yet Described",
+            TSP => "TSP: Not Yet Described",
+            DTS => "DTS: Not Yet Described",
             ATOM => "ATOM: Not Yet Described",
-            VLF  => "VLF: Not Yet Described",
+            VLF => "VLF: Not Yet Described",
             OPPS => "OPPS: Not Yet Described",
             FREE => "FREE: Not Yet Described",
             INIT => "INIT: Not Yet Described",
@@ -207,4 +226,3 @@ impl fmt::Display for PrimarySource {
         write!(f, "{}", desc)
     }
 }
-

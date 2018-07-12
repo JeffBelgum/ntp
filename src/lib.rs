@@ -11,20 +11,22 @@ fn main() {
 ```
 */
 
-#![recursion_limit = "1024"] 
+#![recursion_limit = "1024"]
 
-#[macro_use] extern crate custom_derive;
-#[macro_use] extern crate conv;
-#[macro_use] extern crate error_chain;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate custom_derive;
+#[macro_use]
+extern crate conv;
+#[macro_use]
+extern crate error_chain;
+#[macro_use]
+extern crate log;
 extern crate byteorder;
 extern crate time;
 
 use std::io::Cursor;
-use std::net::{ToSocketAddrs,UdpSocket};
+use std::net::{ToSocketAddrs, UdpSocket};
 use std::time::Duration;
-
-
 
 pub mod errors;
 pub mod formats;
