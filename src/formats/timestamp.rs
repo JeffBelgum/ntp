@@ -21,7 +21,10 @@ impl From<unix_time::Instant> for ShortFormat {
     fn from(t: unix_time::Instant) -> ShortFormat {
         let sec = t.secs() + EPOCH_DELTA;
         let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
-        ShortFormat { sec: sec as u16, frac: frac as u16 }
+        ShortFormat {
+            sec: sec as u16,
+            frac: frac as u16,
+        }
     }
 }
 
@@ -50,7 +53,10 @@ impl From<unix_time::Instant> for TimestampFormat {
     fn from(t: unix_time::Instant) -> TimestampFormat {
         let sec = t.secs() + EPOCH_DELTA;
         let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
-        TimestampFormat { sec: sec as u32, frac: frac as u32 }
+        TimestampFormat {
+            sec: sec as u32,
+            frac: frac as u32,
+        }
     }
 }
 
