@@ -1,3 +1,4 @@
+//! NTP data structure.
 use byteorder::{NetworkEndian, ReadBytesExt, WriteBytesExt};
 use conv::TryFrom;
 use errors::*;
@@ -5,6 +6,9 @@ use formats::timestamp::{ShortFormat, TimestampFormat};
 use formats::{LeapIndicator, Mode, PrimarySource, ReferenceIdentifier, Stratum, Version};
 use unix_time;
 
+/// Represents the ntp packet data structure
+///
+/// Excludes extension fields, key identifier, and digest.
 #[derive(Debug, PartialEq, Default)]
 pub struct Packet {
     pub li: LeapIndicator,
@@ -23,6 +27,8 @@ pub struct Packet {
 }
 
 impl Packet {
+    /// Instantiate a new ntp v2 packet in client mode with transmit time
+    /// set to `time::now()`.
     pub fn new_client() -> Packet {
         let transmit_time = unix_time::Instant::now().into();
         trace!("{:?}", transmit_time);
@@ -34,6 +40,10 @@ impl Packet {
         }
     }
 
+    /// Parse an ntp `Packet` from a bytes reader.
+    ///
+    /// If there are too few bytes in the reader or the result is a malformed
+    /// ntp packet, an error is returned.
     pub fn try_from<T: ReadBytesExt>(mut rdr: T) -> Result<Packet> {
         let li_vn_mode = rdr.read_u8()?;
         let li = LeapIndicator::try_from(li_vn_mode >> 6)?;

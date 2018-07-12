@@ -1,8 +1,10 @@
+//! Structs representing ntp time datatypes.
 use unix_time;
 
 pub static EPOCH_DELTA: i64 = 2208988800i64;
 static NTP_SCALE: f64 = 4294967295.0_f64;
 
+/// The short format is used in delay and dispersion header fields where the full resolution and range of the other formats are not justified.
 #[derive(Debug, PartialEq, Default, Copy, Clone)]
 pub struct ShortFormat {
     pub sec: u16,
@@ -43,6 +45,9 @@ impl From<u32> for ShortFormat {
     }
 }
 
+/// The 64-bit timestamp format is used in packet headers and other places with limited word size.
+///
+/// It includes a seconds field spanning 136 years and a fraction field resolving 232 picoseconds.
 #[derive(Debug, PartialEq, Default, Copy, Clone)]
 pub struct TimestampFormat {
     pub sec: u32,

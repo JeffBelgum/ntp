@@ -1,14 +1,20 @@
+//! Enums and structs representing fields of an ntp data structure.
 use std::fmt;
 
 pub mod timestamp;
 
 custom_derive! {
+    /// Warning of an impending leap second to be inserted or deleted in the last minute of the current month
     #[repr(u8)]
     #[derive(Debug,PartialEq,TryFrom(u8))]
     pub enum LeapIndicator {
+        /// No warning
         NoWarning = 0,
+        /// Last minute of the day has 61 seconds
         AddOne = 1,
+        /// Last minute of the day has 59 seconds
         SubOne = 2,
+        /// Clock unsynchronized
         Unknown = 3
     }
 }
@@ -20,6 +26,7 @@ impl Default for LeapIndicator {
 }
 
 custom_derive! {
+    /// Version of the NTP protocol to be used.
     #[repr(u8)]
     #[derive(Debug,PartialEq,Eq,PartialOrd,Ord,TryFrom(u8))]
     pub enum Version {
@@ -37,6 +44,7 @@ impl Default for Version {
 }
 
 custom_derive! {
+    /// Mode of the source of an NTP packet.
     #[repr(u8)]
     #[derive(Debug,PartialEq,TryFrom(u8))]
     pub enum Mode {
@@ -57,6 +65,17 @@ impl Default for Mode {
     }
 }
 
+/// The stratum of a server or client can be thought of as a representation of its authority.
+///
+/// Loosely following the conventions established by the telephone
+/// industry, the level of each server in the hierarchy is defined by a
+/// stratum number.  Primary servers are assigned stratum one; secondary
+/// servers at each lower level are assigned stratum numbers one greater
+/// than the preceding level.  As the stratum number increases, its
+/// accuracy degrades depending on the particular network path and system
+/// clock stability.  Mean errors, measured by synchronization distances,
+/// increase approximately in proportion to stratum numbers and measured
+/// round-trip delay.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Default, Ord)]
 pub struct Stratum {
     value: u8,
@@ -75,10 +94,12 @@ impl Stratum {
     pub fn invalid(&self) -> bool {
         self.value == 0
     }
+    /// A primary server (e.g., equipped with a GPS receiver)
     #[inline]
     pub fn primary(&self) -> bool {
         self.value == 1
     }
+    /// A secondary server (via NTP)
     #[inline]
     pub fn secondary(&self) -> bool {
         2 <= self.value && self.value <= 15
@@ -91,16 +112,30 @@ impl Stratum {
     pub fn reserved(&self) -> bool {
         self.value >= 17
     }
+    /// Fetch the raw stratum value ranging from 0 - 255
+    ///
+    /// 0: unspecified or invalid
+    ///
+    /// 1: primary server (e.g., equipped with a GPS receiver)
+    ///
+    /// 2-15: secondary server (via NTP)
+    ///
+    /// 16: unsynchronized
+    ///
+    /// 17-255: reserved
     #[inline]
     pub fn get_value(&self) -> u8 {
         self.value
     }
 }
 
+/// 32-bit code identifying the particular server or reference clock
 #[repr(u32)]
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum ReferenceIdentifier {
+    /// A primary source is a 4 character string representing the specific source
     Primary(PrimarySource),
+    /// A 32-bit integer used to detect timing loops
     Secondary(u32),
 }
 
@@ -136,8 +171,8 @@ impl fmt::Display for ReferenceIdentifier {
     }
 }
 
-/// ascii chars packed into a u32 for matching a raw buffer
 custom_derive! {
+    /// Ascii chars packed into a u32 for matching a raw buffer
     #[repr(u32)]
     #[derive(Debug,PartialEq,Copy,Clone,TryFrom(u32))]
     pub enum PrimarySource {

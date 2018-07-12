@@ -1,3 +1,4 @@
+//! Error type for the ntp crate.
 use conv::Unrepresentable;
 use std::io;
 
