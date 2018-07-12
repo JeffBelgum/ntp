@@ -1,6 +1,11 @@
 Ntplib
 ------------
 
+[![Build Status](https://travis-ci.org/JeffBelgum/ntp.svg?branch=master)](https://travis-ci.org/JeffBelgum/ntp)
+[![Documentation](https://docs.rs/ntp/badge.svg)](https://docs.rs/ntp)
+[![Crates.io](https://img.shields.io/crates/v/ntp.svg?maxAge=2592000)](https://crates.io/crates/ntp)
+[![License](https://img.shields.io/crates/l/ntp.svg)](https://github.com/JeffBelgum/ntp#license)
+
 An ntp packet parsing library written in Rust.
 
 
