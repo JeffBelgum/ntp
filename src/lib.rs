@@ -1,5 +1,7 @@
 /*!
 # Example
+Shows how to use the ntp library to fetch the current time according
+to the requested ntp server.
 
 ```rust
 extern crate chrono;
@@ -38,6 +40,12 @@ pub mod formats;
 pub mod packet;
 pub mod unix_time;
 
+/// Send a blocking request to an ntp server with a hardcoded 5 second timeout.
+///
+///   `addr` can be any valid socket address
+///   returns an error if the server cannot be reached or the response is invalid.
+///
+///   **TODO**: remove hardcoded timeout
 pub fn request<A: ToSocketAddrs>(addr: A) -> errors::Result<packet::Packet> {
     let data: Vec<u8> = packet::Packet::new_client().into();
     let sock = UdpSocket::bind("0.0.0.0:0")?;
