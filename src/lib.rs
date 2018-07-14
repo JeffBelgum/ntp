@@ -48,7 +48,7 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> io::Result<protocol::Packet> {
     let mut packet = {
         let leap_indicator = protocol::LeapIndicator::default();
         let version = protocol::Version::V4;
-        let mode = protocol::Mode::CLIENT;
+        let mode = protocol::Mode::Client;
         let poll = 0;
         let precision = 0;
         let root_delay = protocol::ShortFormat::default();

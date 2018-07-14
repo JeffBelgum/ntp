@@ -168,14 +168,26 @@ custom_derive! {
 #[derive(Copy, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Version(u8);
 
-/// A 3-bit integer representing the mode.
-///
-/// Note that while this struct is 8-bits, this field is packed to 3 in the actual header.
-///
-/// As the only constructors are via associated constants, it should be impossible to create an
-/// invalid `Mode`.
-#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
-pub struct Mode(u8);
+custom_derive! {
+    /// A 3-bit integer representing the mode.
+    ///
+    /// Note that while this struct is 8-bits, this field is packed to 3 in the actual header.
+    ///
+    /// As the only constructors are via associated constants, it should be impossible to create an
+    /// invalid `Mode`.
+    #[repr(u8)]
+    #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, TryFrom(u8))]
+    pub enum Mode {
+        Reserved = 0,
+        SymmetricActive = 1,
+        SymmetricPassive = 2,
+        Client = 3,
+        Server = 4,
+        Broadcast = 5,
+        NtpControlMessage = 6,
+        ReservedForPrivateUse = 7,
+    }
+}
 
 /// An 8-bit integer representing the stratum.
 ///
@@ -464,18 +476,6 @@ impl Version {
     }
 }
 
-impl Mode {
-    pub const RESERVED: Self = Mode(0);
-    pub const SYMMETRIC_ACTIVE: Self = Mode(1);
-    pub const SYMMETRIC_PASSIVE: Self = Mode(2);
-    pub const CLIENT: Self = Mode(3);
-    pub const SERVER: Self = Mode(4);
-    pub const BROADCAST: Self = Mode(5);
-    pub const NTP_CONTROL_MESSAGE: Self = Mode(6);
-    pub const RESERVED_FOR_PRIVATE_USE: Self = Mode(7);
-    pub const MAX: Self = Mode(7);
-}
-
 impl Stratum {
     /// Unspecified or invalid.
     pub const UNSPECIFIED: Self = Stratum(0);
@@ -612,7 +612,7 @@ impl WriteToBytes for (LeapIndicator, Version, Mode) {
         let mut li_vn_mode = 0;
         li_vn_mode |= (li as u8) << 6;
         li_vn_mode |= vn.0 << 3;
-        li_vn_mode |= mode.0;
+        li_vn_mode |= mode as u8;
         writer.write_u8(li_vn_mode)?;
         Ok(())
     }
@@ -696,7 +696,13 @@ impl ReadFromBytes for (LeapIndicator, Version, Mode) {
             },
         };
         let vn = Version(vn_u8);
-        let mode = Mode(mode_u8);
+        let mode = match Mode::try_from(mode_u8).ok() {
+            Some(mode) => mode,
+            None => {
+                let err_msg = "unknown association mode";
+                return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
+            },
+        };
         Ok((li, vn, mode))
     }
 }

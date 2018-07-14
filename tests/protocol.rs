@@ -15,7 +15,7 @@ fn packet_from_bytes() {
     let expected_output = Packet {
         leap_indicator: LeapIndicator::NoWarning,
         version: Version::V2,
-        mode: Mode::SERVER,
+        mode: Mode::Server,
         stratum: Stratum::PRIMARY,
         poll: 3,
         precision: -16,
@@ -54,7 +54,7 @@ fn packet_to_bytes() {
     let input = Packet {
         leap_indicator: LeapIndicator::NoWarning,
         version: Version::V2,
-        mode: Mode::SERVER,
+        mode: Mode::Server,
         stratum: Stratum::PRIMARY,
         poll: 3,
         precision: -16,
