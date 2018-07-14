@@ -409,25 +409,7 @@ custom_derive! {
 /// ```
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Packet {
-    /// 2-bit integer warning of an impending leap second to be inserted or deleted in the last
-    /// minute of the current month with values defined below:
-    ///
-    /// ```ignore
-    /// +-------+----------------------------------------+
-    /// | Value | Meaning                                |
-    /// +-------+----------------------------------------+
-    /// | 0     | no warning                             |
-    /// | 1     | last minute of the day has 61 seconds  |
-    /// | 2     | last minute of the day has 59 seconds  |
-    /// | 3     | unknown (clock unsynchronized)         |
-    /// +-------+----------------------------------------+
-    /// ```
-    ///
-    /// Note that this field is packed in the actual header.
     pub leap_indicator: LeapIndicator,
-    /// 3-bit integer representing the NTP version number, currently 4.
-    ///
-    /// Note that this field is packed in the actual header.
     pub version: Version,
     pub mode: Mode,
     pub stratum: Stratum,
