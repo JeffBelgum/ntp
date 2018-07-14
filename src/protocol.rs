@@ -13,9 +13,6 @@ use std::{fmt, io};
 /// NTP port number.
 pub const PORT: u8 = 123;
 
-/// NTP version number.
-pub const VERSION: u8 = 4;
-
 /// Frequency tolerance PHI (s/s).
 pub const TOLERANCE: f64 = 15e-6;
 
@@ -140,15 +137,27 @@ pub struct DateFormat {
     pub fraction: u64,
 }
 
-/// A 2-bit integer warning of an impending leap second to be inserted or deleted in the last
-/// minute of the current month with values defined below:
-///
-/// Note that this field is packed in the actual header.
-///
-/// As the only constructors are via associated constants, it should be impossible to create an
-/// invalid `LeapIndicator`.
-#[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq)]
-pub struct LeapIndicator(u8);
+custom_derive! {
+    /// A 2-bit integer warning of an impending leap second to be inserted or deleted in the last
+    /// minute of the current month with values defined below:
+    ///
+    /// Note that this field is packed in the actual header.
+    ///
+    /// As the only constructors are via associated constants, it should be impossible to create an
+    /// invalid `LeapIndicator`.
+    #[repr(u8)]
+    #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, TryFrom(u8))]
+    pub enum LeapIndicator {
+        /// No leap required.
+        NoWarning = 0,
+        /// Last minute of the day has 61 seconds.
+        AddOne = 1,
+        /// Last minute of the day has 59 seconds.
+        SubOne = 2,
+        /// Clock unsynchronized.
+        Unknown = 3,
+    }
+}
 
 /// A 3-bit integer representing the NTP version number, currently 4.
 ///
@@ -443,17 +452,6 @@ impl PrimarySource {
     }
 }
 
-impl LeapIndicator {
-    /// No leap required.
-    pub const NO_WARNING: Self = LeapIndicator(0);
-    /// Last minute of the day has 61 seconds.
-    pub const ADD_ONE: Self = LeapIndicator(1);
-    /// Last minute of the day has 59 seconds.
-    pub const SUB_ONE: Self = LeapIndicator(2);
-    /// Clock unsynchronized.
-    pub const UNKNOWN: Self = LeapIndicator(3);
-}
-
 impl Version {
     pub const V1: Self = Version(1);
     pub const V2: Self = Version(2);
@@ -612,7 +610,7 @@ impl WriteToBytes for (LeapIndicator, Version, Mode) {
     fn write_to_bytes<W: WriteBytesExt>(&self, mut writer: W) -> io::Result<()> {
         let (li, vn, mode) = *self;
         let mut li_vn_mode = 0;
-        li_vn_mode |= li.0 << 6;
+        li_vn_mode |= (li as u8) << 6;
         li_vn_mode |= vn.0 << 3;
         li_vn_mode |= mode.0;
         writer.write_u8(li_vn_mode)?;
@@ -690,7 +688,13 @@ impl ReadFromBytes for (LeapIndicator, Version, Mode) {
         let li_u8 = li_vn_mode >> 6;
         let vn_u8 = (li_vn_mode >> 3) & 0b111;
         let mode_u8 = li_vn_mode & 0b111;
-        let li = LeapIndicator(li_u8);
+        let li = match LeapIndicator::try_from(li_u8).ok() {
+            Some(li) => li,
+            None => {
+                let err_msg = "unknown leap indicator";
+                return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
+            },
+        };
         let vn = Version(vn_u8);
         let mode = Mode(mode_u8);
         Ok((li, vn, mode))
@@ -745,6 +749,14 @@ impl ReadFromBytes for Packet {
             receive_timestamp,
             transmit_timestamp,
         })
+    }
+}
+
+// Manual default implementations.
+
+impl Default for LeapIndicator {
+    fn default() -> Self {
+        LeapIndicator::NoWarning
     }
 }
 

@@ -13,7 +13,7 @@ fn packet_from_bytes() {
         188, 128, 113, 46, 35, 158, 108,
     ];
     let expected_output = Packet {
-        leap_indicator: LeapIndicator::NO_WARNING,
+        leap_indicator: LeapIndicator::NoWarning,
         version: Version::V2,
         mode: Mode::SERVER,
         stratum: Stratum::PRIMARY,
@@ -52,7 +52,7 @@ fn packet_to_bytes() {
         188, 128, 113, 46, 35, 158, 108,
     ];
     let input = Packet {
-        leap_indicator: LeapIndicator::NO_WARNING,
+        leap_indicator: LeapIndicator::NoWarning,
         version: Version::V2,
         mode: Mode::SERVER,
         stratum: Stratum::PRIMARY,
