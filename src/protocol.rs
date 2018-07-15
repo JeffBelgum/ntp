@@ -61,8 +61,8 @@ pub trait ReadFromBytes: Sized {
 }
 
 /// Types that have a constant size when written to or read from bytes.
-pub trait SizeBytes {
-    const SIZE_BYTES: usize;
+pub trait ConstPackedSizeBytes {
+    const PACKED_SIZE_BYTES: usize;
 }
 
 /// **NTP Short Format** - Used in delay and dispersion header fields where the full resolution and
@@ -437,6 +437,9 @@ pub struct Packet {
     pub transmit_timestamp: TimestampFormat,
 }
 
+/// The consecutive types within the first packed byte in the NTP packet.
+pub type PacketByte1 = (LeapIndicator, Version, Mode);
+
 // Inherent implementations.
 
 impl PrimarySource {
@@ -485,38 +488,38 @@ impl Stratum {
 
 // Size implementations.
 
-impl SizeBytes for ShortFormat {
-    const SIZE_BYTES: usize = 4;
+impl ConstPackedSizeBytes for ShortFormat {
+    const PACKED_SIZE_BYTES: usize = 4;
 }
 
-impl SizeBytes for TimestampFormat {
-    const SIZE_BYTES: usize = 8;
+impl ConstPackedSizeBytes for TimestampFormat {
+    const PACKED_SIZE_BYTES: usize = 8;
 }
 
-impl SizeBytes for DateFormat {
-    const SIZE_BYTES: usize = 16;
+impl ConstPackedSizeBytes for DateFormat {
+    const PACKED_SIZE_BYTES: usize = 16;
 }
 
-impl SizeBytes for Stratum {
-    const SIZE_BYTES: usize = 1;
+impl ConstPackedSizeBytes for Stratum {
+    const PACKED_SIZE_BYTES: usize = 1;
 }
 
-impl SizeBytes for ReferenceIdentifier {
-    const SIZE_BYTES: usize = 4;
+impl ConstPackedSizeBytes for ReferenceIdentifier {
+    const PACKED_SIZE_BYTES: usize = 4;
 }
 
-impl SizeBytes for (LeapIndicator, Version, Mode) {
-    const SIZE_BYTES: usize = 1;
+impl ConstPackedSizeBytes for PacketByte1 {
+    const PACKED_SIZE_BYTES: usize = 1;
 }
 
-impl SizeBytes for Packet {
-    const SIZE_BYTES: usize =
-        <(LeapIndicator, Version, Mode)>::SIZE_BYTES
-        + Stratum::SIZE_BYTES
+impl ConstPackedSizeBytes for Packet {
+    const PACKED_SIZE_BYTES: usize =
+        PacketByte1::PACKED_SIZE_BYTES
+        + Stratum::PACKED_SIZE_BYTES
         + 2
-        + ShortFormat::SIZE_BYTES * 2
-        + ReferenceIdentifier::SIZE_BYTES
-        + TimestampFormat::SIZE_BYTES * 4;
+        + ShortFormat::PACKED_SIZE_BYTES * 2
+        + ReferenceIdentifier::PACKED_SIZE_BYTES
+        + TimestampFormat::PACKED_SIZE_BYTES * 4;
 }
 
 // Writer implementations.

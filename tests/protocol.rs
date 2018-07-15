@@ -2,7 +2,7 @@ extern crate ntp;
 
 use ntp::protocol::{
     LeapIndicator, Mode, ShortFormat, PrimarySource, ReadBytes, Packet, ReferenceIdentifier,
-    SizeBytes, Stratum, TimestampFormat, Version, WriteBytes,
+    ConstPackedSizeBytes, Stratum, TimestampFormat, Version, WriteBytes,
 };
 
 #[test]
@@ -78,7 +78,7 @@ fn packet_to_bytes() {
             fraction: 774086252,
         },
     };
-    let mut bytes = [0u8; Packet::SIZE_BYTES];
+    let mut bytes = [0u8; Packet::PACKED_SIZE_BYTES];
     (&mut bytes[..]).write_bytes(&input).unwrap();
     assert_eq!(&bytes[..], &expected_output[..]);
 }
@@ -91,7 +91,7 @@ fn packet_conversion_roundtrip() {
         188, 128, 113, 46, 35, 158, 108,
     ];
     let packet = (&input[..]).read_bytes::<Packet>().unwrap();
-    let mut output = [0u8; Packet::SIZE_BYTES];
+    let mut output = [0u8; Packet::PACKED_SIZE_BYTES];
     (&mut output[..]).write_bytes(&packet).unwrap();
     assert_eq!(&input[..], &output[..]);
 }

@@ -29,7 +29,7 @@ extern crate conv;
 extern crate log;
 extern crate byteorder;
 
-use protocol::{ReadBytes, SizeBytes, WriteBytes};
+use protocol::{ReadBytes, ConstPackedSizeBytes, WriteBytes};
 use std::io;
 use std::net::{ToSocketAddrs, UdpSocket};
 use std::time::Duration;
@@ -78,7 +78,7 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> io::Result<protocol::Packet> {
     };
 
     // Write the packet to a slice of bytes.
-    let mut bytes = [0u8; protocol::Packet::SIZE_BYTES];
+    let mut bytes = [0u8; protocol::Packet::PACKED_SIZE_BYTES];
     (&mut bytes[..]).write_bytes(&packet)?;
 
     // Create the socket from which we will send the packet.
