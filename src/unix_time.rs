@@ -1,4 +1,11 @@
-use std::time;
+use protocol;
+use std::{self, time};
+
+/// The number of seconds from 1st January 1900 UTC to the start of the Unix epoch.
+pub const EPOCH_DELTA: i64 = 2_208_988_800;
+
+// The NTP fractional scale.
+const NTP_SCALE: f64 = std::u32::MAX as f64;
 
 /// Describes an instant relative to the `UNIX_EPOCH` - 00:00:00 Coordinated Universal Time (UTC),
 /// Thursay, 1 January 1970 in seconds with the fractional part in nanoseconds.
@@ -85,5 +92,45 @@ impl Instant {
     /// The fractional component of the **Instant** in nanoseconds.
     pub fn subsec_nanos(&self) -> i32 {
         self.subsec_nanos
+    }
+}
+
+// Conversion implementations.
+
+impl From<protocol::ShortFormat> for Instant {
+    fn from(t: protocol::ShortFormat) -> Self {
+        let secs = t.seconds as i64 - EPOCH_DELTA;
+        let subsec_nanos = (t.fraction as f64 / NTP_SCALE * 1e9) as i32;
+        Instant::new(secs, subsec_nanos)
+    }
+}
+
+impl From<protocol::TimestampFormat> for Instant {
+    fn from(t: protocol::TimestampFormat) -> Self {
+        let secs = t.seconds as i64 - EPOCH_DELTA;
+        let subsec_nanos = (t.fraction as f64 / NTP_SCALE * 1e9) as i32;
+        Instant::new(secs, subsec_nanos)
+    }
+}
+
+impl From<Instant> for protocol::ShortFormat {
+    fn from(t: Instant) -> Self {
+        let sec = t.secs() + EPOCH_DELTA;
+        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
+        protocol::ShortFormat {
+            seconds: sec as u16,
+            fraction: frac as u16,
+        }
+    }
+}
+
+impl From<Instant> for protocol::TimestampFormat {
+    fn from(t: Instant) -> Self {
+        let sec = t.secs() + EPOCH_DELTA;
+        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
+        protocol::TimestampFormat {
+            seconds: sec as u32,
+            fraction: frac as u32,
+        }
     }
 }

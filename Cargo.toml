@@ -11,20 +11,11 @@ readme = "README.md"
 keywords = ["protocol", "network", "time", "parser", "binary"]
 categories = ["date-and-time", "network-programming", "parser-implementations", "encoding"]
 
-
-[features]
-backtrace = ["error-chain/backtrace"]
-
-
 [dependencies]
 byteorder = "1.1"
 conv = "0.3.2"
 custom_derive = "0.1.5"
 log = "0.3.6"
-
-[dependencies.error-chain]
-version = "0.12.0"
-default-features = false
 
 [dev-dependencies]
 chrono = "0.4.4"
