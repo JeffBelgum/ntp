@@ -708,17 +708,22 @@ impl ReadFromBytes for Packet {
             if stratum == Stratum::PRIMARY {
                 match PrimarySource::try_from(u) {
                     Ok(src) => ReferenceIdentifier::PrimarySource(src),
-                    Err(_) => match KissOfDeath::try_from(u) {
-                        Ok(kod) => ReferenceIdentifier::KissOfDeath(kod),
-                        Err(_) => {
-                            let err_msg = "unknown reference id";
-                            return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
-                        }
-                    },
+                    Err(_) => {
+                        let err_msg = "unknown reference id";
+                        return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
+                    }
                 }
             } else if stratum.is_secondary() {
                 let arr = be_u32_to_bytes(u);
                 ReferenceIdentifier::SecondaryOrClient(arr)
+            } else if stratum == Stratum::UNSPECIFIED {
+                match KissOfDeath::try_from(u) {
+                    Ok(kod) => ReferenceIdentifier::KissOfDeath(kod),
+                    Err(_) => {
+                        let err_msg = "unknown kiss of death code";
+                        return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
+                    }
+                }
             } else {
                 let err_msg = "unsupported stratum";
                 return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
