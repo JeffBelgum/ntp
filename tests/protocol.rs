@@ -27,7 +27,7 @@ fn packet_from_bytes() {
             seconds: 0,
             fraction: 24,
         },
-        reference_id: ReferenceIdentifier::PrimarySource(PrimarySource::Cdma),
+        reference_id: ReferenceIdentifier::PrimarySource(PrimarySource::CDMA),
         reference_timestamp: TimestampFormat {
             seconds: 3619455081,
             fraction: 3332976227,
@@ -72,7 +72,7 @@ fn packet_to_bytes() {
             seconds: 0,
             fraction: 24,
         },
-        reference_id: ReferenceIdentifier::PrimarySource(PrimarySource::Cdma),
+        reference_id: ReferenceIdentifier::PrimarySource(PrimarySource::CDMA),
         reference_timestamp: TimestampFormat {
             seconds: 3619455081,
             fraction: 3332976227,

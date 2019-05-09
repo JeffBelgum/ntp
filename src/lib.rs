@@ -55,7 +55,7 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> io::Result<protocol::Packet> {
         let root_dispersion = protocol::ShortFormat::default();
         let transmit_timestamp = unix_time::Instant::now().into();
         let stratum = protocol::Stratum::UNSPECIFIED;
-        let src = protocol::PrimarySource::Null;
+        let src = protocol::PrimarySource::NULL;
         let reference_id = protocol::ReferenceIdentifier::PrimarySource(src);
         let reference_timestamp = protocol::TimestampFormat::default();
         let receive_timestamp = protocol::TimestampFormat::default();
