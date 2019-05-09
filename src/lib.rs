@@ -23,7 +23,6 @@ fn main() {
 
 #[macro_use]
 extern crate custom_derive;
-#[macro_use]
 extern crate conv;
 #[macro_use]
 extern crate log;
