@@ -5,7 +5,7 @@ use std::{self, time};
 pub const EPOCH_DELTA: i64 = 2_208_988_800;
 
 // The NTP fractional scale.
-const NTP_SCALE: f64 = std::u32::MAX as f64;
+const NTP_SCALE: f64 = std::u32::MAX as f64 + 1.0;
 
 /// Describes an instant relative to the `UNIX_EPOCH` - 00:00:00 Coordinated Universal Time (UTC),
 /// Thursay, 1 January 1970 in seconds with the fractional part in nanoseconds.
