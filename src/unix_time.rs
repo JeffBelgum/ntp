@@ -99,16 +99,16 @@ impl Instant {
 
 impl From<protocol::ShortFormat> for Instant {
     fn from(t: protocol::ShortFormat) -> Self {
-        let secs = t.seconds as i64 - EPOCH_DELTA;
-        let subsec_nanos = (t.fraction as f64 / NTP_SCALE * 1e9) as i32;
+        let secs = i64::from(t.seconds) - EPOCH_DELTA;
+        let subsec_nanos = (f64::from(t.fraction) / NTP_SCALE * 1e9) as i32;
         Instant::new(secs, subsec_nanos)
     }
 }
 
 impl From<protocol::TimestampFormat> for Instant {
     fn from(t: protocol::TimestampFormat) -> Self {
-        let secs = t.seconds as i64 - EPOCH_DELTA;
-        let subsec_nanos = (t.fraction as f64 / NTP_SCALE * 1e9) as i32;
+        let secs = i64::from(t.seconds) - EPOCH_DELTA;
+        let subsec_nanos = (f64::from(t.fraction) / NTP_SCALE * 1e9) as i32;
         Instant::new(secs, subsec_nanos)
     }
 }
@@ -116,7 +116,7 @@ impl From<protocol::TimestampFormat> for Instant {
 impl From<Instant> for protocol::ShortFormat {
     fn from(t: Instant) -> Self {
         let sec = t.secs() + EPOCH_DELTA;
-        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e9;
+        let frac = f64::from(t.subsec_nanos()) * NTP_SCALE / 1e9;
         protocol::ShortFormat {
             seconds: sec as u16,
             fraction: frac as u16,
@@ -127,7 +127,7 @@ impl From<Instant> for protocol::ShortFormat {
 impl From<Instant> for protocol::TimestampFormat {
     fn from(t: Instant) -> Self {
         let sec = t.secs() + EPOCH_DELTA;
-        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e9;
+        let frac = f64::from(t.subsec_nanos()) * NTP_SCALE / 1e9;
         protocol::TimestampFormat {
             seconds: sec as u32,
             fraction: frac as u32,

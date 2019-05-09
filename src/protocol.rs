@@ -246,7 +246,7 @@ macro_rules! code_to_u32 {
             | (($w[2] as u32) << 8)
             | (($w[1] as u32) << 16)
             | (($w[0] as u32) << 24)
-            | ((*$w as [u8; 4])[0] as u32 * 0)
+            | (($w as &[u8; 4])[0] as u32 * 0)
     };
 }
 
@@ -444,7 +444,7 @@ impl PrimarySource {
     pub const NULL: PrimarySource = PrimarySource(0);
 
     /// The bytestring representation of the primary source.
-    pub fn bytes(&self) -> [u8; 4] {
+    pub fn bytes(self) -> [u8; 4] {
         be_u32_to_bytes(self.0)
     }
 }
@@ -456,7 +456,7 @@ impl Version {
     pub const V4: Self = Version(4);
 
     /// Whether or not the version is a known, valid version.
-    pub fn is_known(&self) -> bool {
+    pub fn is_known(self) -> bool {
         self.0 >= 1 && self.0 <= 4
     }
 }
@@ -476,13 +476,13 @@ impl Stratum {
     pub const MAX: Self = Stratum(16);
 
     /// Whether or not the stratum represents a secondary server.
-    pub fn is_secondary(&self) -> bool {
-        Self::SECONDARY_MIN <= *self && *self <= Self::SECONDARY_MAX
+    pub fn is_secondary(self) -> bool {
+        Self::SECONDARY_MIN <= self && self <= Self::SECONDARY_MAX
     }
 
     /// Whether or not the stratum is in the reserved range.
-    pub fn is_reserved(&self) -> bool {
-        *self > Self::MAX
+    pub fn is_reserved(self) -> bool {
+        self > Self::MAX
     }
 }
 
