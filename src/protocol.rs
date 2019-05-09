@@ -242,11 +242,11 @@ pub enum ReferenceIdentifier {
 // Convert an ascii string to a big-endian u32.
 macro_rules! code_to_u32 {
     ($w:expr) => {
-        (($w[3] as u32) << 0) |
-        (($w[2] as u32) << 8) |
-        (($w[1] as u32) << 16) |
-        (($w[0] as u32) << 24) |
-        ((*$w as [u8; 4])[0] as u32 * 0)
+        (($w[3] as u32) << 0)
+            | (($w[2] as u32) << 8)
+            | (($w[1] as u32) << 16)
+            | (($w[0] as u32) << 24)
+            | (($w as &[u8; 4])[0] as u32 * 0)
     };
 }
 
@@ -256,44 +256,9 @@ custom_derive! {
     /// The authoritative list of Reference Identifiers is maintained by IANA; however, any string
     /// beginning with the ASCII character "X" is reserved for unregistered experimentation and
     /// development.
-    #[repr(u32)]
-    #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, TryFrom(u32))]
-    pub enum PrimarySource {
-        Goes = code_to_u32!(b"GOES"),
-        Gps = code_to_u32!(b"GPS\0"),
-        Cdma = code_to_u32!(b"CDMA"),
-        Gal = code_to_u32!(b"GAL\0"),
-        Pps = code_to_u32!(b"PPS\0"),
-        Irig = code_to_u32!(b"IRIG"),
-        Wwvb = code_to_u32!(b"WWVB"),
-        Dcf = code_to_u32!(b"DCF\0"),
-        Hgb = code_to_u32!(b"HGB\0"),
-        Msf = code_to_u32!(b"MSF\0"),
-        Jjy = code_to_u32!(b"JJY\0"),
-        Lorc = code_to_u32!(b"LORC"),
-        Tdf = code_to_u32!(b"TDF\0"),
-        Chu = code_to_u32!(b"CHU\0"),
-        Wwv = code_to_u32!(b"WWV\0"),
-        Wwvh = code_to_u32!(b"WWVH"),
-        Nist = code_to_u32!(b"NIST"),
-        Acts = code_to_u32!(b"ACTS"),
-        Usno = code_to_u32!(b"USNO"),
-        Ptb = code_to_u32!(b"PTB\0"),
-        Goog = code_to_u32!(b"GOOG"),
-        Locl = code_to_u32!(b"LOCL"),
-        Cesm = code_to_u32!(b"CESM"),
-        Rbdm = code_to_u32!(b"RBDM"),
-        Omeg = code_to_u32!(b"OMEG"),
-        Dcn = code_to_u32!(b"DCN\0"),
-        Tsp = code_to_u32!(b"TSP\0"),
-        Dts = code_to_u32!(b"DTS\0"),
-        Atom = code_to_u32!(b"ATOM"),
-        Vlf = code_to_u32!(b"VLF\0"),
-        Opps = code_to_u32!(b"OPPS"),
-        Free = code_to_u32!(b"FREE"),
-        Init = code_to_u32!(b"INIT"),
-        Null = 0,
-    }
+    #[repr(transparent)]
+    #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+    pub struct PrimarySource(u32);
 }
 
 custom_derive! {
@@ -307,7 +272,7 @@ custom_derive! {
     /// for an intelligent client, either NTPv4 or SNTPv4. Kiss codes are encoded in four-character
     /// ASCII strings that are left justified and zero filled. The strings are designed for
     /// character displays and log files.
-    /// 
+    ///
     /// Recipients of kiss codes MUST inspect them and, in the following cases, take the actions
     /// described.
     #[repr(u32)]
@@ -443,9 +408,44 @@ pub type PacketByte1 = (LeapIndicator, Version, Mode);
 // Inherent implementations.
 
 impl PrimarySource {
+    pub const GOES: PrimarySource = PrimarySource(code_to_u32!(b"GOES"));
+    pub const GPS: PrimarySource = PrimarySource(code_to_u32!(b"GPS\0"));
+    pub const CDMA: PrimarySource = PrimarySource(code_to_u32!(b"CDMA"));
+    pub const GAL: PrimarySource = PrimarySource(code_to_u32!(b"GAL\0"));
+    pub const PPS: PrimarySource = PrimarySource(code_to_u32!(b"PPS\0"));
+    pub const IRIG: PrimarySource = PrimarySource(code_to_u32!(b"IRIG"));
+    pub const WWVB: PrimarySource = PrimarySource(code_to_u32!(b"WWVB"));
+    pub const DCF: PrimarySource = PrimarySource(code_to_u32!(b"DCF\0"));
+    pub const HGB: PrimarySource = PrimarySource(code_to_u32!(b"HGB\0"));
+    pub const MSF: PrimarySource = PrimarySource(code_to_u32!(b"MSF\0"));
+    pub const JJY: PrimarySource = PrimarySource(code_to_u32!(b"JJY\0"));
+    pub const LORC: PrimarySource = PrimarySource(code_to_u32!(b"LORC"));
+    pub const TDF: PrimarySource = PrimarySource(code_to_u32!(b"TDF\0"));
+    pub const CHU: PrimarySource = PrimarySource(code_to_u32!(b"CHU\0"));
+    pub const WWV: PrimarySource = PrimarySource(code_to_u32!(b"WWV\0"));
+    pub const WWVH: PrimarySource = PrimarySource(code_to_u32!(b"WWVH"));
+    pub const NIST: PrimarySource = PrimarySource(code_to_u32!(b"NIST"));
+    pub const ACTS: PrimarySource = PrimarySource(code_to_u32!(b"ACTS"));
+    pub const USNO: PrimarySource = PrimarySource(code_to_u32!(b"USNO"));
+    pub const PTB: PrimarySource = PrimarySource(code_to_u32!(b"PTB\0"));
+    pub const GOOG: PrimarySource = PrimarySource(code_to_u32!(b"GOOG"));
+    pub const LOCL: PrimarySource = PrimarySource(code_to_u32!(b"LOCL"));
+    pub const CESM: PrimarySource = PrimarySource(code_to_u32!(b"CESM"));
+    pub const RBDM: PrimarySource = PrimarySource(code_to_u32!(b"RBDM"));
+    pub const OMEG: PrimarySource = PrimarySource(code_to_u32!(b"OMEG"));
+    pub const DCN: PrimarySource = PrimarySource(code_to_u32!(b"DCN\0"));
+    pub const TSP: PrimarySource = PrimarySource(code_to_u32!(b"TSP\0"));
+    pub const DTS: PrimarySource = PrimarySource(code_to_u32!(b"DTS\0"));
+    pub const ATOM: PrimarySource = PrimarySource(code_to_u32!(b"ATOM"));
+    pub const VLF: PrimarySource = PrimarySource(code_to_u32!(b"VLF\0"));
+    pub const OPPS: PrimarySource = PrimarySource(code_to_u32!(b"OPPS"));
+    pub const FREE: PrimarySource = PrimarySource(code_to_u32!(b"FREE"));
+    pub const INIT: PrimarySource = PrimarySource(code_to_u32!(b"INIT"));
+    pub const NULL: PrimarySource = PrimarySource(0);
+
     /// The bytestring representation of the primary source.
-    pub fn bytes(&self) -> [u8; 4] {
-        be_u32_to_bytes(*self as u32)
+    pub fn bytes(self) -> [u8; 4] {
+        be_u32_to_bytes(self.0)
     }
 }
 
@@ -456,7 +456,7 @@ impl Version {
     pub const V4: Self = Version(4);
 
     /// Whether or not the version is a known, valid version.
-    pub fn is_known(&self) -> bool {
+    pub fn is_known(self) -> bool {
         self.0 >= 1 && self.0 <= 4
     }
 }
@@ -476,13 +476,13 @@ impl Stratum {
     pub const MAX: Self = Stratum(16);
 
     /// Whether or not the stratum represents a secondary server.
-    pub fn is_secondary(&self) -> bool {
-        Self::SECONDARY_MIN <= *self && *self <= Self::SECONDARY_MAX
+    pub fn is_secondary(self) -> bool {
+        Self::SECONDARY_MIN <= self && self <= Self::SECONDARY_MAX
     }
 
     /// Whether or not the stratum is in the reserved range.
-    pub fn is_reserved(&self) -> bool {
-        *self > Self::MAX
+    pub fn is_reserved(self) -> bool {
+        self > Self::MAX
     }
 }
 
@@ -513,8 +513,7 @@ impl ConstPackedSizeBytes for PacketByte1 {
 }
 
 impl ConstPackedSizeBytes for Packet {
-    const PACKED_SIZE_BYTES: usize =
-        PacketByte1::PACKED_SIZE_BYTES
+    const PACKED_SIZE_BYTES: usize = PacketByte1::PACKED_SIZE_BYTES
         + Stratum::PACKED_SIZE_BYTES
         + 2
         + ShortFormat::PACKED_SIZE_BYTES * 2
@@ -581,7 +580,7 @@ impl WriteToBytes for ReferenceIdentifier {
                 writer.write_u32::<BE>(kod as u32)?;
             }
             ReferenceIdentifier::PrimarySource(src) => {
-                writer.write_u32::<BE>(src as u32)?;
+                writer.write_u32::<BE>(src.0)?;
             }
             ReferenceIdentifier::SecondaryOrClient(arr) => {
                 writer.write_u32::<BE>(code_to_u32!(&arr))?;
@@ -655,7 +654,11 @@ impl ReadFromBytes for DateFormat {
         let era_number = reader.read_i32::<BE>()?;
         let era_offset = reader.read_u32::<BE>()?;
         let fraction = reader.read_u64::<BE>()?;
-        let date_format = DateFormat { era_number, era_offset, fraction };
+        let date_format = DateFormat {
+            era_number,
+            era_offset,
+            fraction,
+        };
         Ok(date_format)
     }
 }
@@ -678,7 +681,7 @@ impl ReadFromBytes for (LeapIndicator, Version, Mode) {
             None => {
                 let err_msg = "unknown leap indicator";
                 return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
-            },
+            }
         };
         let vn = Version(vn_u8);
         let mode = match Mode::try_from(mode_u8).ok() {
@@ -686,7 +689,7 @@ impl ReadFromBytes for (LeapIndicator, Version, Mode) {
             None => {
                 let err_msg = "unknown association mode";
                 return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
-            },
+            }
         };
         Ok((li, vn, mode))
     }
@@ -703,19 +706,18 @@ impl ReadFromBytes for Packet {
         let reference_id = {
             let u = reader.read_u32::<BE>()?;
             if stratum == Stratum::PRIMARY {
-                match PrimarySource::try_from(u) {
-                    Ok(src) => ReferenceIdentifier::PrimarySource(src),
-                    Err(_) => match KissOfDeath::try_from(u) {
-                        Ok(kod) => ReferenceIdentifier::KissOfDeath(kod),
-                        Err(_) => {
-                            let err_msg = "unknown reference id";
-                            return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
-                        }
-                    },
-                }
+                ReferenceIdentifier::PrimarySource(PrimarySource(u))
             } else if stratum.is_secondary() {
                 let arr = be_u32_to_bytes(u);
                 ReferenceIdentifier::SecondaryOrClient(arr)
+            } else if stratum == Stratum::UNSPECIFIED {
+                match KissOfDeath::try_from(u) {
+                    Ok(kod) => ReferenceIdentifier::KissOfDeath(kod),
+                    Err(_) => {
+                        let err_msg = "unknown kiss of death code";
+                        return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));
+                    }
+                }
             } else {
                 let err_msg = "unsupported stratum";
                 return Err(io::Error::new(io::ErrorKind::InvalidData, err_msg));

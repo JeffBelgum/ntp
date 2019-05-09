@@ -23,13 +23,12 @@ fn main() {
 
 #[macro_use]
 extern crate custom_derive;
-#[macro_use]
 extern crate conv;
 #[macro_use]
 extern crate log;
 extern crate byteorder;
 
-use protocol::{ReadBytes, ConstPackedSizeBytes, WriteBytes};
+use protocol::{ConstPackedSizeBytes, ReadBytes, WriteBytes};
 use std::io;
 use std::net::{ToSocketAddrs, UdpSocket};
 use std::time::Duration;
@@ -55,7 +54,7 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> io::Result<protocol::Packet> {
         let root_dispersion = protocol::ShortFormat::default();
         let transmit_timestamp = unix_time::Instant::now().into();
         let stratum = protocol::Stratum::UNSPECIFIED;
-        let src = protocol::PrimarySource::Null;
+        let src = protocol::PrimarySource::NULL;
         let reference_id = protocol::ReferenceIdentifier::PrimarySource(src);
         let reference_timestamp = protocol::TimestampFormat::default();
         let receive_timestamp = protocol::TimestampFormat::default();
