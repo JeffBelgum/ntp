@@ -116,7 +116,7 @@ impl From<protocol::TimestampFormat> for Instant {
 impl From<Instant> for protocol::ShortFormat {
     fn from(t: Instant) -> Self {
         let sec = t.secs() + EPOCH_DELTA;
-        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
+        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e9;
         protocol::ShortFormat {
             seconds: sec as u16,
             fraction: frac as u16,
@@ -127,7 +127,7 @@ impl From<Instant> for protocol::ShortFormat {
 impl From<Instant> for protocol::TimestampFormat {
     fn from(t: Instant) -> Self {
         let sec = t.secs() + EPOCH_DELTA;
-        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e10;
+        let frac = t.subsec_nanos() as f64 * NTP_SCALE / 1e9;
         protocol::TimestampFormat {
             seconds: sec as u32,
             fraction: frac as u32,
