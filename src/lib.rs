@@ -29,7 +29,7 @@ extern crate conv;
 extern crate log;
 extern crate byteorder;
 
-use protocol::{ReadBytes, ConstPackedSizeBytes, WriteBytes};
+use protocol::{ConstPackedSizeBytes, ReadBytes, WriteBytes};
 use std::io;
 use std::net::{ToSocketAddrs, UdpSocket};
 use std::time::Duration;
