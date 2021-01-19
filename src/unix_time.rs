@@ -1,4 +1,4 @@
-use protocol;
+use crate::protocol;
 use std::{self, time};
 
 /// The number of seconds from 1st January 1900 UTC to the start of the Unix epoch.

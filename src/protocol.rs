@@ -51,13 +51,13 @@ pub trait ReadBytes {
 /// Network Time Protocol types that may be written to network endian bytes.
 pub trait WriteToBytes {
     /// Write the command to bytes.
-    fn write_to_bytes<W: WriteBytesExt>(&self, W) -> io::Result<()>;
+    fn write_to_bytes<W: WriteBytesExt>(&self, writer: W) -> io::Result<()>;
 }
 
 /// Network Time Protocol types that may be read from network endian bytes.
 pub trait ReadFromBytes: Sized {
     /// Read the command from bytes.
-    fn read_from_bytes<R: ReadBytesExt>(R) -> io::Result<Self>;
+    fn read_from_bytes<R: ReadBytesExt>(reader: R) -> io::Result<Self>;
 }
 
 /// Types that have a constant size when written to or read from bytes.
