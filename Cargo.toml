@@ -10,6 +10,7 @@ repository = "https://github.com/JeffBelgum/ntp"
 readme = "README.md"
 keywords = ["protocol", "network", "time", "parser", "binary"]
 categories = ["date-and-time", "network-programming", "parser-implementations", "encoding"]
+edition = "2018"
 
 [dependencies]
 byteorder = "1.1"
