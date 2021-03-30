@@ -88,11 +88,12 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> io::Result<protocol::Packet> {
 
     // Send the data.
     let sz = sock.send_to(&bytes, addr)?;
-    debug!("{:?}", sock.local_addr());
-    debug!("sent: {}", sz);
 
     // Receive the response.
     let res = sock.recv(&mut bytes[..])?;
+
+    debug!("{:?}", sock.local_addr());
+    debug!("sent: {}", sz);
     debug!("recv: {:?}", res);
     debug!("{:?}", &bytes[..]);
 
