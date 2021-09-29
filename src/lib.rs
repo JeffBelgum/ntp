@@ -29,7 +29,7 @@ extern crate conv;
 extern crate log;
 extern crate byteorder;
 
-use protocol::{ReadBytes, ConstPackedSizeBytes, WriteBytes};
+use protocol::{ConstPackedSizeBytes, ReadBytes, WriteBytes};
 use std::io;
 use std::net::{ToSocketAddrs, UdpSocket};
 use std::time::Duration;
@@ -82,12 +82,25 @@ pub fn request<A: ToSocketAddrs>(addr: A) -> io::Result<protocol::Packet> {
     (&mut bytes[..]).write_bytes(&packet)?;
 
     // Create the socket from which we will send the packet.
-    let sock = UdpSocket::bind("0.0.0.0:0")?;
+    let sock_addr = match addr.to_socket_addrs()?.next() {
+        Some(sock_addr) => sock_addr,
+        None => {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "no socket address found",
+            ))
+        }
+    };
+    let sock = UdpSocket::bind(if sock_addr.is_ipv4() {
+        "0.0.0.0:0"
+    } else {
+        "[::]:0"
+    })?;
     sock.set_read_timeout(Some(Duration::from_secs(5)))?;
     sock.set_write_timeout(Some(Duration::from_secs(5)))?;
 
     // Send the data.
-    let sz = sock.send_to(&bytes, addr)?;
+    let sz = sock.send_to(&bytes, sock_addr)?;
     debug!("{:?}", sock.local_addr());
     debug!("sent: {}", sz);
 
